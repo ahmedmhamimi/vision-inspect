@@ -1,0 +1,117 @@
+/**
+ * service.ts
+ * Orchestrates the analyze pipeline: validated image in → routed InspectionRecord out.
+ * Owned by Shaza (AI & Backend Engineer). This file is the only place that sequences
+ * "try the primary provider, fall back to the secondary on failure" — that sequencing
+ * logic does not belong in the route handler (which should stay a thin HTTP boundary) or
+ * in the domain layer (which must not know providers exist at all).
+ *
+ * - analyzeAndRoute(input): the main entry point called by the API route.
+ * - confirmInspection(imageId, decision): applies a human decision and persists the
+ *   result.
+ * - generateAndSaveReport(imageId): generates the report for a confirmed record and
+ *   persists it — throws UnconfirmedRecordError (via generateInspectionReport) if the
+ *   record is not actually confirmed.
+ */
+import { randomUUID } from 'crypto';
+import {
+  getKnowledgeRegistry,
+  getReportSink,
+  getVisionAnalysisChain,
+} from './composition-root';
+import type { ConfirmRequest, InspectionRecord, InspectionReport } from './schema';
+import { ConfirmedInspectionRecordSchema } from './schema';
+import { applyHumanDecision, generateInspectionReport, routeDefect } from './tool-rules';
+import { VisionAnalysisError, type AnalyzeImageInput } from './ports/vision-analysis.port';
+
+export class AnalysisUnavailableError extends Error {
+  constructor(public readonly attempts: { provider: string; message: string }[]) {
+    super(
+      `All vision-analysis providers failed: ` +
+        attempts.map((a) => `${a.provider} (${a.message})`).join('; '),
+    );
+    this.name = 'AnalysisUnavailableError';
+  }
+}
+
+export class RecordNotFoundError extends Error {
+  constructor(imageId: string) {
+    super(`No inspection record found for image_id "${imageId}".`);
+    this.name = 'RecordNotFoundError';
+  }
+}
+
+/**
+ * Runs the full analyze pipeline. Tries each adapter in the vision-analysis chain in
+ * order (Gemini, then Groq fallback), returning the first successful hypothesis, then
+ * routes it deterministically and persists the resulting pending record.
+ *
+ * Throws AnalysisUnavailableError only if every adapter in the chain failed — the caller
+ * (route.ts) maps this to a safe 502-style response.
+ */
+export async function analyzeAndRoute(input: AnalyzeImageInput): Promise<InspectionRecord> {
+  const chain = getVisionAnalysisChain();
+  const attempts: { provider: string; message: string }[] = [];
+
+  for (const adapter of chain) {
+    try {
+      const hypothesis = await adapter.analyze(input);
+      const taxonomy = await getKnowledgeRegistry().getTaxonomy();
+      const imageId = randomUUID();
+      const record = routeDefect(hypothesis, imageId, taxonomy);
+
+      await getReportSink().saveRecord(record);
+      return record;
+    } catch (err) {
+      if (err instanceof VisionAnalysisError) {
+        attempts.push({ provider: err.provider, message: err.message });
+        continue; // try the next adapter in the chain
+      }
+      throw err; // an unexpected error (e.g. a taxonomy load failure) is not a provider
+      // failure and should not be silently swallowed as one
+    }
+  }
+
+  throw new AnalysisUnavailableError(attempts);
+}
+
+/** Applies a human reviewer's decision to a previously routed record and persists it. */
+export async function confirmInspection(
+  imageId: string,
+  decision: ConfirmRequest,
+): Promise<InspectionRecord> {
+  const sink = getReportSink();
+  const existing = await sink.getRecord(imageId);
+  if (!existing) {
+    throw new RecordNotFoundError(imageId);
+  }
+
+  const updated = applyHumanDecision(existing, decision);
+  await sink.saveRecord(updated);
+  return updated;
+}
+
+/**
+ * Generates and persists the auditable report for a confirmed record. Delegates the
+ * actual "is this really confirmed" check to generateInspectionReport() itself, so the
+ * guarantee lives in one place (tool-rules.ts) rather than being re-implemented here.
+ */
+export async function generateAndSaveReport(imageId: string): Promise<InspectionReport> {
+  const sink = getReportSink();
+  const record = await sink.getRecord(imageId);
+  if (!record) {
+    throw new RecordNotFoundError(imageId);
+  }
+
+  // Re-validate as a ConfirmedInspectionRecord here too (in addition to the check inside
+  // generateInspectionReport itself) so a RecordNotFoundError-shaped 404 versus an
+  // UnconfirmedRecordError-shaped 409 can be told apart cleanly by the route handler.
+  const parsed = ConfirmedInspectionRecordSchema.parse(record);
+  const report = generateInspectionReport(parsed);
+  await sink.saveReport(report);
+  return report;
+}
+
+export async function listInspectionHistory(limit?: number): Promise<InspectionRecord[]> {
+  return getReportSink().listRecords(limit);
+}

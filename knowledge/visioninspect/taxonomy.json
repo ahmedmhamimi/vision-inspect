@@ -1,0 +1,120 @@
+{
+  "_notice": "SAMPLE DATA — This taxonomy is a placeholder built for this scaffold so the app is runnable and testable end to end. It is NOT an approved inspection standard. Team 06 (VisionInspect) must replace this file with the real bounded taxonomy of 20-30 sample images and approved SOP referenced in the project brief, reviewed and approved before any real pilot use. See docs/source-register.md.",
+  "version": "0.1.0-sample",
+  "entries": [
+    {
+      "defect_type": "surface-scratch",
+      "label": "Surface scratch",
+      "description": "A linear abrasion visible on the surface finish, not penetrating the base material.",
+      "severity_rules": [
+        { "condition": "length_class: minor", "severity": "low" },
+        { "condition": "length_class: moderate", "severity": "medium" },
+        { "condition": "length_class: severe_or_crosses_functional_surface", "severity": "high" }
+      ],
+      "default_severity": "low",
+      "sop_reference": "SOP-VI-01 §2.1"
+    },
+    {
+      "defect_type": "surface-dent",
+      "label": "Surface dent",
+      "description": "A localized deformation of the surface without visible material fracture.",
+      "severity_rules": [
+        { "condition": "depth_class: shallow", "severity": "low" },
+        { "condition": "depth_class: moderate", "severity": "medium" },
+        { "condition": "depth_class: deep_or_structural", "severity": "high" }
+      ],
+      "default_severity": "medium",
+      "sop_reference": "SOP-VI-01 §2.2"
+    },
+    {
+      "defect_type": "discoloration",
+      "label": "Discoloration",
+      "description": "A visible color variance from the approved reference finish.",
+      "severity_rules": [
+        { "condition": "extent_class: spot", "severity": "low" },
+        { "condition": "extent_class: patch", "severity": "medium" },
+        { "condition": "extent_class: widespread", "severity": "high" }
+      ],
+      "default_severity": "low",
+      "sop_reference": "SOP-VI-01 §2.3"
+    },
+    {
+      "defect_type": "crack",
+      "label": "Crack",
+      "description": "A visible fracture line in the base material.",
+      "severity_rules": [
+        { "condition": "any", "severity": "high" }
+      ],
+      "default_severity": "high",
+      "sop_reference": "SOP-VI-01 §2.4",
+      "notes": "Any confirmed crack is treated as high severity by policy regardless of apparent size — hairline cracks can propagate."
+    },
+    {
+      "defect_type": "missing-component",
+      "label": "Missing component",
+      "description": "An expected part or sub-assembly is absent from the item.",
+      "severity_rules": [
+        { "condition": "component_class: cosmetic", "severity": "medium" },
+        { "condition": "component_class: functional", "severity": "high" }
+      ],
+      "default_severity": "high",
+      "sop_reference": "SOP-VI-01 §2.5"
+    },
+    {
+      "defect_type": "misalignment",
+      "label": "Misalignment",
+      "description": "A component or assembly is positioned outside its approved tolerance.",
+      "severity_rules": [
+        { "condition": "deviation_class: within_visual_tolerance", "severity": "low" },
+        { "condition": "deviation_class: exceeds_visual_tolerance", "severity": "medium" }
+      ],
+      "default_severity": "low",
+      "sop_reference": "SOP-VI-01 §2.6"
+    },
+    {
+      "defect_type": "contamination",
+      "label": "Contamination",
+      "description": "Visible foreign material (dust, residue, debris) on the item.",
+      "severity_rules": [
+        { "condition": "extent_class: trace", "severity": "low" },
+        { "condition": "extent_class: significant", "severity": "medium" }
+      ],
+      "default_severity": "low",
+      "sop_reference": "SOP-VI-01 §2.7"
+    },
+    {
+      "defect_type": "label-defect",
+      "label": "Label / marking defect",
+      "description": "Printed or applied labeling is missing, illegible, or incorrect.",
+      "severity_rules": [
+        { "condition": "impact_class: cosmetic", "severity": "low" },
+        { "condition": "impact_class: compliance_or_safety_marking", "severity": "high" }
+      ],
+      "default_severity": "medium",
+      "sop_reference": "SOP-VI-01 §2.8"
+    },
+    {
+      "defect_type": "dimensional-deviation",
+      "label": "Dimensional deviation",
+      "description": "A visually apparent size or shape deviation from the reference item.",
+      "severity_rules": [
+        { "condition": "any", "severity": "medium" }
+      ],
+      "default_severity": "medium",
+      "sop_reference": "SOP-VI-01 §2.9",
+      "notes": "Visual-only estimate. Confirmed dimensional deviations should be re-checked with calibrated measurement tools outside this application — see OUT OF SCOPE in the project brief."
+    },
+    {
+      "defect_type": "no-defect-detected",
+      "label": "No defect detected",
+      "description": "No visible evidence of a defect matching the approved taxonomy was found.",
+      "severity_rules": [
+        { "condition": "any", "severity": "low" }
+      ],
+      "default_severity": "low",
+      "sop_reference": "SOP-VI-01 §2.10"
+    }
+  ],
+  "confidence_escalation_threshold": 0.55,
+  "confidence_escalation_note": "Any hypothesis with confidence below this threshold is routed to 'escalate-to-senior-reviewer' regardless of its default severity mapping — low model confidence is itself treated as a routing signal, not just a display detail."
+}

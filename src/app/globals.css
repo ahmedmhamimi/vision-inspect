@@ -1,0 +1,95 @@
+/*
+ * globals.css
+ * Base styles + the reusable "evidence tag" visual primitives that carry this app's
+ * signature element: the AI-proposed section and the human sign-off section of a defect
+ * card are visually distinct zones on one physical-feeling tag, divided by a perforation
+ * line — reinforcing, visually, the same rule the architecture enforces in code: the
+ * model proposes, a human signs off, and those are never the same action.
+ */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-steel;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  /* Visible keyboard focus everywhere, not just on links/buttons — required for the
+     "keyboard accessible" acceptance criterion. Never removed with outline: none. */
+  :focus-visible {
+    outline: 2px solid theme('colors.teal.DEFAULT');
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply font-display;
+  }
+}
+
+@layer components {
+  /* The evidence tag: the container for one defect hypothesis + its routing + its
+     human sign-off. */
+  .evidence-tag {
+    @apply bg-white border border-steel rounded-tag shadow-tag;
+  }
+
+  /* The perforation divider between "what the AI proposed" and "what a human decided" —
+     a physical-tag detail rendered as a CSS background pattern, not an image asset. */
+  .tag-perforation {
+    @apply h-px w-full;
+    background-image: repeating-linear-gradient(
+      to right,
+      theme('colors.steel-dark') 0,
+      theme('colors.steel-dark') 6px,
+      transparent 6px,
+      transparent 11px
+    );
+  }
+
+  /* The punch-hole detail in the tag's corner — purely decorative, reinforces the
+     physical-tag metaphor without competing with the content. */
+  .tag-punch-hole {
+    @apply absolute h-3 w-3 rounded-full bg-porcelain border border-steel-dark;
+  }
+
+  /* The "signed off" stamp treatment applied once human_decision leaves 'pending'. */
+  .stamp-confirmed {
+    @apply inline-flex items-center gap-1.5 rounded-tag border-2 border-teal px-2.5 py-1
+      font-display text-sm font-medium uppercase tracking-wide text-teal shadow-stamp;
+    transform: rotate(-2deg);
+  }
+
+  .stamp-corrected {
+    @apply inline-flex items-center gap-1.5 rounded-tag border-2 border-severity-medium
+      px-2.5 py-1 font-display text-sm font-medium uppercase tracking-wide
+      text-severity-medium;
+    transform: rotate(-2deg);
+  }
+
+  /* Minimum 44x44px touch target, applied to icon-only or compact controls on mobile. */
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px];
+  }
+}
