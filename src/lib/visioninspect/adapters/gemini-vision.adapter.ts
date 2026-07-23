@@ -6,12 +6,17 @@
  * https://ai.google.dev/gemini-api/docs/structured-output).
  *
  * ⚠️ VERIFICATION NOTE FOR THE TEAM: this adapter was written against the documented
- * @google/genai request/response shape but has NOT been executed against the live
- * Gemini API in this environment (no API key was available at build time). Before
- * relying on it, run it once against a real key and a real sample image, confirm the
- * response actually matches RawHypothesisSchema, and adjust the SDK call if the current
- * Gemini docs have moved since this was written. This is exactly the kind of claim
- * SETUP_AND_NEXT_STEPS.md asks Shaza to verify personally — do not skip that step.
+ * @google/genai request/response shape. It was ORIGINALLY hardcoded to 'gemini-2.0-flash',
+ * which was fully shut down by Google on June 1, 2026 — every call silently failed over
+ * to the Groq fallback (0% confidence, no real image analysis) with no visible error,
+ * because service.ts only logs a failure when EVERY provider in the chain fails, not
+ * when one falls back successfully. This is exactly the kind of bug the test suite
+ * cannot catch on its own, since the fake test adapter never calls a real model name —
+ * it was only found by running the app against real API keys and noticing every result
+ * looked identical. Model bumped to 'gemini-2.5-flash' (stable through Oct 16, 2026 per
+ * https://ai.google.dev/gemini-api/docs/deprecations). Before relying on this longer
+ * term, check that page again — Google deprecates Gemini models on a rolling schedule,
+ * and 'gemini-2.5-flash' has its own scheduled retirement.
  *
  * - GeminiVisionAdapter: implements VisionAnalysisPort against Gemini.
  */
@@ -59,7 +64,7 @@ export class GeminiVisionAdapter implements VisionAnalysisPort {
   readonly providerName = 'gemini';
   private readonly client: GoogleGenAI;
 
-  constructor(private readonly model: string = 'gemini-2.0-flash') {
+  constructor(private readonly model: string = 'gemini-2.5-flash') {
     this.client = new GoogleGenAI({ apiKey: getGeminiApiKey() });
   }
 

@@ -68,6 +68,21 @@ disclosure is easy to skim past. These are concrete evidence of what actually ha
    environment with normal internet access (a real dev machine, CI, or Vercel), which
    nearly every real environment has.
 
+6. **A dead Gemini model name, found only by running the app for real.** The Gemini
+   adapter was originally hardcoded to `gemini-2.0-flash`. That model was fully shut
+   down by Google on June 1, 2026. Every single request silently failed over to the
+   Groq fallback — 0% confidence, "no visual analysis was possible," identical for
+   every image regardless of content — with no error visible anywhere, because the
+   fallback succeeded and only a total-chain failure was being logged. This is exactly
+   the category of bug the test suite structurally cannot catch (the fake test adapter
+   never calls a real model name), and it was only found because the person running
+   this project deployed it with real API keys and noticed every result looked
+   identical, then asked about it directly. Fixed by (a) updating the default model to
+   `gemini-2.5-flash` and (b) adding a `console.error` log for every individual
+   provider failure in `analyzeAndRoute()`, not just for total-chain failure — so the
+   next time a provider silently degrades, it's visible in server logs immediately
+   instead of only being detectable by noticing every result looks the same.
+
 ## What genuinely could not be done, and why
 
 - **No real Gemini or Groq API call was made.** No API key was available in the build

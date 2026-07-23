@@ -17,17 +17,32 @@ you** — they require a human to create an account and accept the provider's te
 
 ## 2. Verify the AI adapters against a real API call
 
-`gemini-vision.adapter.ts` and `groq-fallback.adapter.ts` were written against the
-documented SDK request/response shapes, but **neither has been executed against a live
-API** — no key was available in the build environment. Before relying on them:
+**Update: this has partially happened already.** Live testing caught a real bug — the
+Gemini adapter was hardcoded to `gemini-2.0-flash`, a model Google fully shut down on
+June 1, 2026. Every request was silently falling back to Groq (0% confidence, identical
+"unavailable" result for every image) with no visible error, since only a total-chain
+failure was being logged. This has been fixed: the model is updated to `gemini-2.5-flash`,
+and every individual provider failure now logs to the server console, not just total
+failure.
 
-1. Add real keys (step 1)
-2. Run `npm run dev`, upload a real sample image, and confirm the response actually
+**Still needed:**
+
+1. Re-run a real inspection with real keys and confirm you now get an actual Gemini
+   analysis (varying results per image, non-zero confidence, no "degraded" banner) rather
+   than the same fallback response every time
+2. Watch your terminal/server logs while doing this — any `[visioninspect:analyzeAndRoute]`
+   error means a provider is still failing, and the log line will tell you which one and
+   why
+3. If you still see the Groq fallback, the likely causes are: `GEMINI_API_KEY` not set
+   or invalid, the key's Google Cloud project not having the Gemini API enabled, or a
+   quota/billing issue — the server log will show the actual error message from Google,
+   not just "unavailable"
+4. Once real Gemini responses are confirmed working, check that the response actually
    matches what `EvidencePanel.tsx` expects to render
-3. If the Gemini or Groq SDK's exact method names or request shape have moved since this
-   was written, fix the adapter — the port interface (`VisionAnalysisPort`) means this
-   fix is contained entirely to one file
-4. **Shaza owns this step** — she's the AI & Backend Engineer, and this is exactly the
+5. Google deprecates Gemini models on a rolling schedule — check
+   https://ai.google.dev/gemini-api/docs/deprecations periodically and don't assume a
+   model name that works today will keep working indefinitely
+6. **Shaza owns this step** — she's the AI & Backend Engineer, and this is exactly the
    kind of "does the code actually do what it claims" verification an AI-generated
    scaffold cannot self-certify
 

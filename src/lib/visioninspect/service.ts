@@ -64,6 +64,16 @@ export async function analyzeAndRoute(input: AnalyzeImageInput): Promise<Inspect
       return record;
     } catch (err) {
       if (err instanceof VisionAnalysisError) {
+        // Log every individual provider failure, not just the case where the whole
+        // chain fails. Without this, a persistently-broken primary provider (dead
+        // model name, expired key, quota exceeded) silently degrades every request to
+        // the fallback with no visible trace anywhere — exactly the bug found during
+        // this project's own live testing, where a shut-down Gemini model name caused
+        // every single request to fall back to Groq with no error surfaced to anyone.
+        console.error(
+          `[visioninspect:analyzeAndRoute] Provider "${err.provider}" failed, ` +
+            `trying next in chain: ${err.message}`,
+        );
         attempts.push({ provider: err.provider, message: err.message });
         continue; // try the next adapter in the chain
       }
