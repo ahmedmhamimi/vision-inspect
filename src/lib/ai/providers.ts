@@ -61,3 +61,21 @@ export function getMaxUploadBytes(): number {
   const parsed = raw ? Number.parseInt(raw, 10) : NaN;
   return Number.isFinite(parsed) && parsed > 0 ? parsed : 8 * 1024 * 1024; // 8MB default
 }
+
+export function getSupabaseUrl(): string {
+  assertServerOnly();
+  const url = process.env.SUPABASE_URL;
+  if (!url) {
+    throw new Error('SUPABASE_URL is not set. Please add it to your environment variables.');
+  }
+  return url;
+}
+
+export function getSupabaseAnonKey(): string {
+  assertServerOnly();
+  const key = process.env.SUPABASE_ANON_KEY;
+  if (!key) {
+    throw new Error('SUPABASE_ANON_KEY is not set. Please add it to your environment variables.');
+  }
+  return key;
+}

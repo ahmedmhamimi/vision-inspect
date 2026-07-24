@@ -19,6 +19,7 @@
 import { GeminiVisionAdapter } from './adapters/gemini-vision.adapter';
 import { GroqFallbackAdapter } from './adapters/groq-fallback.adapter';
 import { ReportStorageAdapter } from './adapters/report-storage.adapter';
+import { SupabaseStorageAdapter } from './adapters/supabase-storage.adapter';
 import { TaxonomyRegistryAdapter } from './adapters/taxonomy-registry.adapter';
 import type { KnowledgeRegistryPort } from './ports/knowledge-registry.port';
 import type { ReportSinkPort } from './ports/report-sink.port';
@@ -45,6 +46,9 @@ export function getKnowledgeRegistry(): KnowledgeRegistryPort {
 
 export function getReportSink(): ReportSinkPort {
   if (reportSinkOverride) return reportSinkOverride;
+  if (process.env.SUPABASE_URL) {
+    return new SupabaseStorageAdapter();
+  }
   return new ReportStorageAdapter();
 }
 
