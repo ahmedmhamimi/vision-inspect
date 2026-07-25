@@ -164,8 +164,12 @@ function rowToRecord(row: InspectionRecordRow): InspectionRecord {
     taxonomy_reference: row.taxonomy_reference,
     degraded: row.degraded,
     degraded_reason: row.degraded_reason ?? undefined,
-    created_at: row.created_at,
-    confirmed_at: row.confirmed_at ?? undefined,
+    // Postgres timestamptz round-trips through supabase-js as e.g.
+    // "2026-07-25T11:14:19.123456+00:00", but InspectionRecordSchema's
+    // z.string().datetime() strictly requires the "...Z" suffix form. Normalize on
+    // the way out so every record read back from Supabase re-validates cleanly.
+    created_at: new Date(row.created_at).toISOString(),
+    confirmed_at: row.confirmed_at ? new Date(row.confirmed_at).toISOString() : undefined,
     reviewer_note: row.reviewer_note ?? undefined,
   };
 }
