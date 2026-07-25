@@ -16,7 +16,7 @@
  *
  * - ReportStorageAdapter: implements ReportSinkPort against local JSON files.
  */
-import { mkdir, readFile, readdir, writeFile } from 'fs/promises';
+import { mkdir, readFile, readdir, writeFile, unlink } from 'fs/promises';
 import { join } from 'path';
 import type { InspectionRecord, InspectionReport } from '../schema';
 import type { ReportSinkPort } from '../ports/report-sink.port';
@@ -79,6 +79,37 @@ export class ReportStorageAdapter implements ReportSinkPort {
     await this.ensureDirs();
     const filePath = join(this.reportsDir(), `${report.report_id}.json`);
     await writeFile(filePath, JSON.stringify(report, null, 2), 'utf-8');
+  }
+
+  async deleteRecord(imageId: string): Promise<void> {
+    await this.ensureDirs();
+    
+    const recordPath = join(this.recordsDir(), `${imageId}.json`);
+    try {
+      await unlink(recordPath);
+    } catch (err) {
+      if (!isNotFoundError(err)) throw err;
+    }
+
+    try {
+      const files = await readdir(this.reportsDir());
+      const jsonFiles = files.filter((f) => f.endsWith('.json'));
+      
+      for (const file of jsonFiles) {
+        const filePath = join(this.reportsDir(), file);
+        try {
+          const raw = await readFile(filePath, 'utf-8');
+          const report = JSON.parse(raw) as InspectionReport;
+          if (report.image_id === imageId) {
+            await unlink(filePath);
+          }
+        } catch (err) {
+          // ignore read/parse errors for individual files
+        }
+      }
+    } catch (err) {
+      if (!isNotFoundError(err)) throw err;
+    }
   }
 }
 

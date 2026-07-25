@@ -24,6 +24,7 @@ export function HistoryList() {
   const [records, setRecords] = useState<InspectionRecord[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -48,6 +49,23 @@ export function HistoryList() {
       cancelled = true;
     };
   }, [reloadKey]);
+
+  async function handleDelete(imageId: string) {
+    if (!confirm('Are you sure you want to delete this inspection?')) return;
+    setDeletingId(imageId);
+    try {
+      const res = await fetch(`/api/visioninspect?image_id=${imageId}`, { method: 'DELETE' });
+      if (!res.ok) {
+        const body = await res.json();
+        throw new Error(body.error ?? 'Failed to delete record.');
+      }
+      setReloadKey((k) => k + 1);
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Failed to delete record.');
+    } finally {
+      setDeletingId(null);
+    }
+  }
 
   if (error) {
     return <ErrorState message={error} onRetry={() => setReloadKey((k) => k + 1)} />;
@@ -85,6 +103,13 @@ export function HistoryList() {
             <span className="font-mono text-xs text-graphite-soft">
               {new Date(record.created_at).toLocaleDateString()}
             </span>
+            <button
+              onClick={() => handleDelete(record.image_id)}
+              disabled={deletingId === record.image_id}
+              className="ml-2 font-body text-xs text-red-600 hover:text-red-800 disabled:opacity-50"
+            >
+              {deletingId === record.image_id ? 'Deleting...' : 'Delete'}
+            </button>
           </div>
         </li>
       ))}

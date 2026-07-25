@@ -2,12 +2,12 @@
 
 Every source the AI's domain claims are checked against must be logged here: URL/path,
 date added, owner, and approval status. This is what the "Grounding, tools & AI
-correctness" rubric criterion and Haneen's acceptance criteria ("every AI-generated
+correctness" rubric criterion and Ali's acceptance criteria ("every AI-generated
 domain claim is checked against an original source") point back to.
 
 **Status of this file:** template + sample entries only. The 20-30 real sample images
 required by the project brief are not included — they cannot be produced as part of an
-AI-generated scaffold. Haneen owns filling this in with real entries before any pilot use.
+AI-generated scaffold. Ali owns filling this in with real entries before any pilot use.
 
 ## How to log a new source
 
@@ -43,7 +43,7 @@ AI-generated scaffold. Haneen owns filling this in with real entries before any 
 
 ## Escalation
 
-Any source Haneen is uncertain about — an image with an ambiguous label, a taxonomy
+Any source Ali is uncertain about — an image with an ambiguous label, a taxonomy
 entry that doesn't clearly match the SOP, a defect type the approved corpus doesn't
 cover — should be escalated per the project brief's instructor-escalation path before
 being logged as `approved`. A `draft` entry left in the register at submission time is

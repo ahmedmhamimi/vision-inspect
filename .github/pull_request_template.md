@@ -7,7 +7,7 @@
 - [ ] Integration / architecture (Ahmed)
 - [ ] AI & Backend (Shaza)
 - [ ] Product UI & Workflow (Asma)
-- [ ] Knowledge, Tools & Quality (Haneen)
+- [ ] Knowledge, Tools & Quality (Ali)
 
 ## Pre-merge checklist
 

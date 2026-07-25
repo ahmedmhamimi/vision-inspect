@@ -79,7 +79,7 @@ inspection standard for any real product category. Replace them with the team's 
 reviewed taxonomy and SOP before any pilot use. See `docs/source-register.md` for the
 required format and the approval workflow.
 
-**Haneen owns this step.**
+**Ali owns this step.**
 
 ## 5. Produce real evaluation and test images
 
@@ -90,7 +90,7 @@ image cannot be generated as part of this scaffold. Produce real images matching
 `expected_image_description` and record actual observed model behavior, not just the
 expected behavior this fixture currently documents.
 
-**Haneen owns this step.**
+**Ali owns this step.**
 
 ## 6. The individual defense — this is the one AI genuinely cannot do for you
 
@@ -122,6 +122,6 @@ knowing their own project.
 | Fix report storage for Vercel | Ahmed | Deployment |
 | Fix rate limiter for production scale | Ahmed | Production readiness (not the demo) |
 | Deploy to Vercel | Ahmed | Deployment & ops rubric criterion |
-| Replace taxonomy/SOP | Haneen | Grounding rubric criterion, real pilot use |
-| Real evaluation/injection test images | Haneen | Reliability & security rubric criteria |
+| Replace taxonomy/SOP | Ali | Grounding rubric criterion, real pilot use |
+| Real evaluation/injection test images | Ali | Reliability & security rubric criteria |
 | Personal familiarity with own code | Everyone | Individual defense — 5 pts and a red-flag gate |

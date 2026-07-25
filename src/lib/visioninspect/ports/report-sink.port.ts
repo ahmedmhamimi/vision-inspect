@@ -4,9 +4,9 @@
  * layer (which generates the report's *content*) knowing or caring where it ends up.
  *
  * Owned by: Ahmed (Integration Lead / Solution Architect) — deliberately, even though
- * report *generation* is Haneen's domain logic. Persistence is an environment/deployment
+ * report *generation* is Ali's domain logic. Persistence is an environment/deployment
  * decision (file storage now, a real database later, which storage bucket in production),
- * and keeping that decision with the lead avoids Haneen's domain code needing to know
+ * and keeping that decision with the lead avoids Ali's domain code needing to know
  * about infrastructure choices made in a later session. See docs/architecture.md
  * "Ownership rationale".
  */
@@ -27,4 +27,7 @@ export interface ReportSinkPort {
 
   /** Lists saved records, most recent first — backs the inspection history view. */
   listRecords(limit?: number): Promise<InspectionRecord[]>;
+
+  /** Deletes a saved record and its associated report. */
+  deleteRecord(imageId: string): Promise<void>;
 }

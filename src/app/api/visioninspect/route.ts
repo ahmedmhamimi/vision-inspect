@@ -25,6 +25,7 @@ import {
   confirmInspection,
   generateAndSaveReport,
   listInspectionHistory,
+  deleteInspection,
 } from '@/lib/visioninspect/service';
 import {
   MissingReviewerNoteError,
@@ -137,5 +138,19 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ records: history }, { status: 200 });
   } catch (err) {
     return safeErrorResponse(err, 'GET');
+  }
+}
+
+export async function DELETE(request: NextRequest): Promise<NextResponse> {
+  try {
+    const imageId = request.nextUrl.searchParams.get('image_id');
+    if (!imageId) {
+      return NextResponse.json({ error: 'Missing image_id parameter' }, { status: 400 });
+    }
+
+    await deleteInspection(imageId);
+    return NextResponse.json({ success: true }, { status: 200 });
+  } catch (err) {
+    return safeErrorResponse(err, 'DELETE');
   }
 }

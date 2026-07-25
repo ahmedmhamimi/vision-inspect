@@ -126,6 +126,6 @@ into client-side JavaScript. See `docs/security-checklist.md`.
 | Ahmed Mohamed Hamimi Abdullah | Integration Lead / Solution Architect | `composition-root.ts`, `docs/`, deployment |
 | Shaza Mohamed Bashir | AI & Backend Engineer | `route.ts`, `service.ts`, `schema.ts`, AI adapters |
 | Asma Raafat Abdalsalam | Product UI & Workflow Engineer | `app/visioninspect/`, all `components/visioninspect/` |
-| Haneen Magdy | Knowledge, Tools & Quality Engineer | `taxonomy.ts`, `tool-rules.ts`, `knowledge/`, tests |
+| Ali Hamdi | Knowledge, Tools & Quality Engineer | `taxonomy.ts`, `tool-rules.ts`, `knowledge/`, tests |
 
 Full ownership breakdown in `docs/architecture.md`.

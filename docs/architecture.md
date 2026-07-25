@@ -69,46 +69,46 @@ src/
         ├── validation.ts                        [Shaza] — magic-byte file validation
         ├── rate-limit.ts                        [Shaza] — in-memory rate limiter
         │
-        ├── taxonomy.ts                          [Haneen] — domain: taxonomy lookup, pure
-        ├── tool-rules.ts                        [Haneen] — routeDefect(), generateInspectionReport()
+        ├── taxonomy.ts                          [Ali] — domain: taxonomy lookup, pure
+        ├── tool-rules.ts                        [Ali] — routeDefect(), generateInspectionReport()
         │
         ├── ports/
         │   ├── vision-analysis.port.ts          [Shaza]
-        │   ├── knowledge-registry.port.ts        [Haneen]
+        │   ├── knowledge-registry.port.ts        [Ali]
         │   └── report-sink.port.ts              [Ahmed]
         │
         ├── adapters/
         │   ├── gemini-vision.adapter.ts          [Shaza]
         │   ├── groq-fallback.adapter.ts          [Shaza]
         │   ├── fake-vision.adapter.ts            [Shaza] — test-only, never used in production
-        │   ├── taxonomy-registry.adapter.ts       [Haneen]
+        │   ├── taxonomy-registry.adapter.ts       [Ali]
         │   └── report-storage.adapter.ts          [Ahmed]
         │
         └── composition-root.ts                  [Ahmed] — the ONE file wiring adapters to ports
 
 knowledge/visioninspect/
-├── taxonomy.json                                [Haneen] — SAMPLE DATA, replace before pilot use
-└── sop-register.md                              [Haneen] — SAMPLE DATA, replace before pilot use
+├── taxonomy.json                                [Ali] — SAMPLE DATA, replace before pilot use
+└── sop-register.md                              [Ali] — SAMPLE DATA, replace before pilot use
 
 docs/
 ├── architecture.md                              [Ahmed] — this file
-├── security-checklist.md                        [Ahmed + Haneen]
-└── source-register.md                           [Haneen]
+├── security-checklist.md                        [Ahmed + Ali]
+└── source-register.md                           [Ali]
 
 tests/
-├── domain/tool-rules.test.ts                    [Haneen] — zero network, zero API keys
+├── domain/tool-rules.test.ts                    [Ali] — zero network, zero API keys
 ├── api/visioninspect.test.ts                    [Shaza]  — zero network, zero API keys
 ├── fixtures/visioninspect/                       [shared test infrastructure]
-└── evaluation/visioninspect-cases.json           [Haneen] — the 10-case matrix
+└── evaluation/visioninspect-cases.json           [Ali] — the 10-case matrix
 ```
 
 ### Ownership rationale worth calling out explicitly
 
-**`report-sink.port.ts` and `report-storage.adapter.ts` sit with Ahmed, not Haneen**,
-even though report *generation* (`generateInspectionReport()`) is Haneen's domain logic.
+**`report-sink.port.ts` and `report-storage.adapter.ts` sit with Ahmed, not Ali**,
+even though report *generation* (`generateInspectionReport()`) is Ali's domain logic.
 Report *persistence* is an environment/deployment decision — file storage locally,
 something else in production — and keeping that decision with the Integration Lead
-means Haneen's domain code never needs to know about infrastructure choices made in a
+means Ali's domain code never needs to know about infrastructure choices made in a
 later session. This is also why `report-storage.adapter.ts` carries the explicit warning
 about Vercel's filesystem: that's exactly the kind of environment-specific knowledge
 that belongs with the person who owns deployment, not buried in domain logic.

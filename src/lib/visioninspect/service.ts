@@ -125,3 +125,10 @@ export async function generateAndSaveReport(imageId: string): Promise<Inspection
 export async function listInspectionHistory(limit?: number): Promise<InspectionRecord[]> {
   return getReportSink().listRecords(limit);
 }
+
+export async function deleteInspection(imageId: string): Promise<void> {
+  const sink = getReportSink();
+  // We check if it exists first just to throw 404 cleanly if not, but it's optional.
+  // Actually, sink.deleteRecord might not throw if not exists, but let's keep it simple.
+  await sink.deleteRecord(imageId);
+}

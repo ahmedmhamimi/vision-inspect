@@ -3,7 +3,7 @@
  * Outbound port: how the application obtains the approved taxonomy, without the domain
  * layer knowing it currently lives in a JSON file on disk.
  *
- * Owned by: Haneen (Knowledge, Tools & Quality Engineer) — she also owns the
+ * Owned by: Ali (Knowledge, Tools & Quality Engineer) — she also owns the
  * implementing adapter (taxonomy-registry.adapter.ts) and the taxonomy data itself
  * (knowledge/visioninspect/taxonomy.json).
  *

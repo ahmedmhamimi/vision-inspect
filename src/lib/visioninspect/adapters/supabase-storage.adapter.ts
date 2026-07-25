@@ -125,6 +125,29 @@ export class SupabaseStorageAdapter implements ReportSinkPort {
 
     if (error) throw new Error(`SupabaseStorageAdapter.saveReport: ${error.message}`);
   }
+
+  async deleteRecord(imageId: string): Promise<void> {
+    // Delete from both tables. 
+    const { error: recordError } = await this.client
+      .from('inspection_records')
+      .delete()
+      .eq('image_id', imageId);
+
+    if (recordError) {
+      throw new Error(`Failed to delete record from Supabase: ${recordError.message}`);
+    }
+
+    // In inspection_reports, image_id is inside the JSONB column "report".
+    // We use the JSONB ->> operator in Supabase via eq('report->>image_id', imageId).
+    const { error: reportError } = await this.client
+      .from('inspection_reports')
+      .delete()
+      .eq('report->>image_id', imageId);
+
+    if (reportError) {
+      throw new Error(`Failed to delete report from Supabase: ${reportError.message}`);
+    }
+  }
 }
 
 function rowToRecord(row: InspectionRecordRow): InspectionRecord {
