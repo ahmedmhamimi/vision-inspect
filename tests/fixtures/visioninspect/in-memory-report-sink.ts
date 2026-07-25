@@ -19,10 +19,19 @@ export class InMemoryReportSink implements ReportSinkPort {
     return this.records.get(imageId) ?? null;
   }
 
-  async listRecords(limit = 50): Promise<InspectionRecord[]> {
-    return [...this.records.values()]
+  async listRecords(limit?: number): Promise<InspectionRecord[]> {
+    return Array.from(this.records.values())
       .sort((a, b) => (a.created_at < b.created_at ? 1 : -1))
-      .slice(0, limit);
+      .slice(0, limit ?? 50);
+  }
+
+  async deleteRecord(imageId: string): Promise<void> {
+    this.records.delete(imageId);
+    // Find and delete the report if it exists
+    const reportEntry = Array.from(this.reports.entries()).find(([_, report]) => report.image_id === imageId);
+    if (reportEntry) {
+      this.reports.delete(reportEntry[0]);
+    }
   }
 
   async saveReport(report: InspectionReport): Promise<void> {
