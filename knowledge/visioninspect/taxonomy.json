@@ -1,120 +1,227 @@
 {
-  "_notice": "SAMPLE DATA — This taxonomy is a placeholder built for this scaffold so the app is runnable and testable end to end. It is NOT an approved inspection standard. Team 06 (VisionInspect) must replace this file with the real bounded taxonomy of 20-30 sample images and approved SOP referenced in the project brief, reviewed and approved before any real pilot use. See docs/source-register.md.",
-  "version": "0.1.0-sample",
+  "version": "1.0.0",
+
   "entries": [
     {
-      "defect_type": "surface-scratch",
-      "label": "Surface scratch",
-      "description": "A linear abrasion visible on the surface finish, not penetrating the base material.",
-      "severity_rules": [
-        { "condition": "length_class: minor", "severity": "low" },
-        { "condition": "length_class: moderate", "severity": "medium" },
-        { "condition": "length_class: severe_or_crosses_functional_surface", "severity": "high" }
-      ],
-      "default_severity": "low",
-      "sop_reference": "SOP-VI-01 §2.1"
-    },
-    {
-      "defect_type": "surface-dent",
-      "label": "Surface dent",
-      "description": "A localized deformation of the surface without visible material fracture.",
-      "severity_rules": [
-        { "condition": "depth_class: shallow", "severity": "low" },
-        { "condition": "depth_class: moderate", "severity": "medium" },
-        { "condition": "depth_class: deep_or_structural", "severity": "high" }
-      ],
-      "default_severity": "medium",
-      "sop_reference": "SOP-VI-01 §2.2"
-    },
-    {
-      "defect_type": "discoloration",
-      "label": "Discoloration",
-      "description": "A visible color variance from the approved reference finish.",
-      "severity_rules": [
-        { "condition": "extent_class: spot", "severity": "low" },
-        { "condition": "extent_class: patch", "severity": "medium" },
-        { "condition": "extent_class: widespread", "severity": "high" }
-      ],
-      "default_severity": "low",
-      "sop_reference": "SOP-VI-01 §2.3"
-    },
-    {
-      "defect_type": "crack",
-      "label": "Crack",
-      "description": "A visible fracture line in the base material.",
-      "severity_rules": [
-        { "condition": "any", "severity": "high" }
-      ],
-      "default_severity": "high",
-      "sop_reference": "SOP-VI-01 §2.4",
-      "notes": "Any confirmed crack is treated as high severity by policy regardless of apparent size — hairline cracks can propagate."
-    },
-    {
-      "defect_type": "missing-component",
-      "label": "Missing component",
-      "description": "An expected part or sub-assembly is absent from the item.",
-      "severity_rules": [
-        { "condition": "component_class: cosmetic", "severity": "medium" },
-        { "condition": "component_class: functional", "severity": "high" }
-      ],
-      "default_severity": "high",
-      "sop_reference": "SOP-VI-01 §2.5"
-    },
-    {
-      "defect_type": "misalignment",
-      "label": "Misalignment",
-      "description": "A component or assembly is positioned outside its approved tolerance.",
-      "severity_rules": [
-        { "condition": "deviation_class: within_visual_tolerance", "severity": "low" },
-        { "condition": "deviation_class: exceeds_visual_tolerance", "severity": "medium" }
-      ],
-      "default_severity": "low",
-      "sop_reference": "SOP-VI-01 §2.6"
-    },
-    {
-      "defect_type": "contamination",
-      "label": "Contamination",
-      "description": "Visible foreign material (dust, residue, debris) on the item.",
-      "severity_rules": [
-        { "condition": "extent_class: trace", "severity": "low" },
-        { "condition": "extent_class: significant", "severity": "medium" }
-      ],
-      "default_severity": "low",
-      "sop_reference": "SOP-VI-01 §2.7"
-    },
-    {
-      "defect_type": "label-defect",
-      "label": "Label / marking defect",
-      "description": "Printed or applied labeling is missing, illegible, or incorrect.",
-      "severity_rules": [
-        { "condition": "impact_class: cosmetic", "severity": "low" },
-        { "condition": "impact_class: compliance_or_safety_marking", "severity": "high" }
-      ],
-      "default_severity": "medium",
-      "sop_reference": "SOP-VI-01 §2.8"
-    },
-    {
-      "defect_type": "dimensional-deviation",
-      "label": "Dimensional deviation",
-      "description": "A visually apparent size or shape deviation from the reference item.",
-      "severity_rules": [
-        { "condition": "any", "severity": "medium" }
-      ],
-      "default_severity": "medium",
-      "sop_reference": "SOP-VI-01 §2.9",
-      "notes": "Visual-only estimate. Confirmed dimensional deviations should be re-checked with calibrated measurement tools outside this application — see OUT OF SCOPE in the project brief."
-    },
-    {
-      "defect_type": "no-defect-detected",
-      "label": "No defect detected",
-      "description": "No visible evidence of a defect matching the approved taxonomy was found.",
+      "defect_type": "hairline-screen-crack",
+      "label": "Hairline Screen Crack",
+      "description": "A thin crack on the phone screen that does not affect normal display functionality.",
       "severity_rules": [
         { "condition": "any", "severity": "low" }
       ],
       "default_severity": "low",
-      "sop_reference": "SOP-VI-01 §2.10"
+      "sop_reference": "SOP-PH-01 §2.1"
+    },
+    {
+      "defect_type": "corner-screen-crack",
+      "label": "Corner Screen Crack",
+      "description": "A crack located at one corner of the phone screen.",
+      "severity_rules": [
+        { "condition": "small_corner", "severity": "low" },
+        { "condition": "extends_into_display", "severity": "medium" }
+      ],
+      "default_severity": "medium",
+      "sop_reference": "SOP-PH-01 §2.2"
+    },
+    {
+      "defect_type": "top-edge-crack",
+      "label": "Top Edge Crack",
+      "description": "A crack beginning from the top edge of the phone screen.",
+      "severity_rules": [
+        { "condition": "partial", "severity": "medium" },
+        { "condition": "extends_across_screen", "severity": "high" }
+      ],
+      "default_severity": "medium",
+      "sop_reference": "SOP-PH-01 §2.3"
+    },
+    {
+      "defect_type": "bottom-edge-crack",
+      "label": "Bottom Edge Crack",
+      "description": "A crack beginning from the bottom edge of the phone screen.",
+      "severity_rules": [
+        { "condition": "partial", "severity": "medium" },
+        { "condition": "extends_across_screen", "severity": "high" }
+      ],
+      "default_severity": "medium",
+      "sop_reference": "SOP-PH-01 §2.4"
+    },
+    {
+      "defect_type": "left-edge-crack",
+      "label": "Left Edge Crack",
+      "description": "A crack beginning from the left edge of the display.",
+      "severity_rules": [
+        { "condition": "partial", "severity": "medium" },
+        { "condition": "extends_across_screen", "severity": "high" }
+      ],
+      "default_severity": "medium",
+      "sop_reference": "SOP-PH-01 §2.5"
+    },
+    {
+      "defect_type": "right-edge-crack",
+      "label": "Right Edge Crack",
+      "description": "A crack beginning from the right edge of the display.",
+      "severity_rules": [
+        { "condition": "partial", "severity": "medium" },
+        { "condition": "extends_across_screen", "severity": "high" }
+      ],
+      "default_severity": "medium",
+      "sop_reference": "SOP-PH-01 §2.6"
+    },
+    {
+      "defect_type": "vertical-screen-crack",
+      "label": "Vertical Screen Crack",
+      "description": "A crack running vertically across the phone display.",
+      "severity_rules": [
+        { "condition": "partial", "severity": "medium" },
+        { "condition": "full_length", "severity": "high" }
+      ],
+      "default_severity": "medium",
+      "sop_reference": "SOP-PH-01 §2.7"
+    },
+    {
+      "defect_type": "horizontal-screen-crack",
+      "label": "Horizontal Screen Crack",
+      "description": "A crack running horizontally across the phone display.",
+      "severity_rules": [
+        { "condition": "partial", "severity": "medium" },
+        { "condition": "full_length", "severity": "high" }
+      ],
+      "default_severity": "medium",
+      "sop_reference": "SOP-PH-01 §2.8"
+    },
+    {
+      "defect_type": "diagonal-screen-crack",
+      "label": "Diagonal Screen Crack",
+      "description": "A crack running diagonally across the phone screen.",
+      "severity_rules": [
+        { "condition": "short", "severity": "medium" },
+        { "condition": "long", "severity": "high" }
+      ],
+      "default_severity": "medium",
+      "sop_reference": "SOP-PH-01 §2.9"
+    },
+    {
+      "defect_type": "multiple-screen-cracks",
+      "label": "Multiple Screen Cracks",
+      "description": "More than one visible crack appears on the phone screen.",
+      "severity_rules": [
+        { "condition": "few", "severity": "medium" },
+        { "condition": "many", "severity": "high" }
+      ],
+      "default_severity": "high",
+      "sop_reference": "SOP-PH-01 §2.10"
+    },
+    {
+      "defect_type": "spider-web-crack",
+      "label": "Spider-Web Crack",
+      "description": "Cracks spread outward from a single impact point in a spider-web pattern.",
+      "severity_rules": [
+        { "condition": "any", "severity": "high" }
+      ],
+      "default_severity": "high",
+      "sop_reference": "SOP-PH-01 §2.11"
+    },
+    {
+      "defect_type": "shattered-screen",
+      "label": "Shattered Screen",
+      "description": "The screen glass is heavily broken with extensive visible cracks.",
+      "severity_rules": [
+        { "condition": "any", "severity": "high" }
+      ],
+      "default_severity": "high",
+      "sop_reference": "SOP-PH-01 §2.12",
+      "notes": "A shattered screen is always considered a high-severity defect."
+    },
+    {
+      "defect_type": "deep-screen-crack",
+      "label": "Deep Screen Crack",
+      "description": "A deep crack that penetrates the screen glass and may affect usability.",
+      "severity_rules": [
+        { "condition": "any", "severity": "high" }
+      ],
+      "default_severity": "high",
+      "sop_reference": "SOP-PH-01 §2.13"
+    },
+    {
+      "defect_type": "surface-glass-crack",
+      "label": "Surface Glass Crack",
+      "description": "A crack affecting only the outer glass surface.",
+      "severity_rules": [
+        { "condition": "small", "severity": "low" },
+        { "condition": "large", "severity": "medium" }
+      ],
+      "default_severity": "low",
+      "sop_reference": "SOP-PH-01 §2.14"
+    },
+    {
+      "defect_type": "lcd-oled-crack",
+      "label": "LCD/OLED Internal Crack",
+      "description": "A crack affecting the internal display panel.",
+      "severity_rules": [
+        { "condition": "any", "severity": "high" }
+      ],
+      "default_severity": "high",
+      "sop_reference": "SOP-PH-01 §2.15",
+      "notes": "Internal display damage is always treated as high severity."
+    },
+    {
+      "defect_type": "back-glass-crack",
+      "label": "Back Glass Crack",
+      "description": "A visible crack on the rear glass panel of the phone.",
+      "severity_rules": [
+        { "condition": "small", "severity": "low" },
+        { "condition": "large", "severity": "medium" },
+        { "condition": "shattered", "severity": "high" }
+      ],
+      "default_severity": "medium",
+      "sop_reference": "SOP-PH-01 §2.16"
+    },
+    {
+      "defect_type": "camera-lens-crack",
+      "label": "Camera Lens Crack",
+      "description": "A crack on the protective camera lens.",
+      "severity_rules": [
+        { "condition": "minor", "severity": "medium" },
+        { "condition": "affects_image_quality", "severity": "high" }
+      ],
+      "default_severity": "medium",
+      "sop_reference": "SOP-PH-01 §2.17"
+    },
+    {
+      "defect_type": "frame-crack",
+      "label": "Frame Crack",
+      "description": "A structural crack in the phone frame.",
+      "severity_rules": [
+        { "condition": "small", "severity": "medium" },
+        { "condition": "structural", "severity": "high" }
+      ],
+      "default_severity": "high",
+      "sop_reference": "SOP-PH-01 §2.18"
+    },
+    {
+      "defect_type": "screen-separation",
+      "label": "Screen Separation",
+      "description": "The screen is separating from the phone body after impact.",
+      "severity_rules": [
+        { "condition": "any", "severity": "high" }
+      ],
+      "default_severity": "high",
+      "sop_reference": "SOP-PH-01 §2.19",
+      "notes": "Screen separation indicates severe structural damage."
+    },
+    {
+      "defect_type": "no-defect-detected",
+      "label": "No Defect Detected",
+      "description": "No visible cracks or structural damage were found.",
+      "severity_rules": [
+        { "condition": "any", "severity": "low" }
+      ],
+      "default_severity": "low",
+      "sop_reference": "SOP-PH-01 §2.20"
     }
   ],
+
   "confidence_escalation_threshold": 0.55,
-  "confidence_escalation_note": "Any hypothesis with confidence below this threshold is routed to 'escalate-to-senior-reviewer' regardless of its default severity mapping — low model confidence is itself treated as a routing signal, not just a display detail."
-}
+
+  "confidence_escalation_note": "Predictions below the confidence threshold should be reviewed manually."
+} 
