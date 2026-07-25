@@ -1,5 +1,9 @@
 # .gitignore
 
+
+docstrings.txt
+combined.txt
+
 # dependencies
 /node_modules
 /.pnp
