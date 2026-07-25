@@ -127,7 +127,9 @@ export class SupabaseStorageAdapter implements ReportSinkPort {
   }
 
   async deleteRecord(imageId: string): Promise<void> {
-    // Delete from both tables. 
+    // inspection_reports.image_id has ON DELETE CASCADE (see fix-cascade-delete.sql),
+    // so deleting the record here also deletes its associated report automatically —
+    // no separate delete against inspection_reports is needed or correct here.
     const { error: recordError } = await this.client
       .from('inspection_records')
       .delete()
@@ -135,17 +137,6 @@ export class SupabaseStorageAdapter implements ReportSinkPort {
 
     if (recordError) {
       throw new Error(`Failed to delete record from Supabase: ${recordError.message}`);
-    }
-
-    // In inspection_reports, image_id is inside the JSONB column "report".
-    // We use the JSONB ->> operator in Supabase via eq('report->>image_id', imageId).
-    const { error: reportError } = await this.client
-      .from('inspection_reports')
-      .delete()
-      .eq('report->>image_id', imageId);
-
-    if (reportError) {
-      throw new Error(`Failed to delete report from Supabase: ${reportError.message}`);
     }
   }
 }
