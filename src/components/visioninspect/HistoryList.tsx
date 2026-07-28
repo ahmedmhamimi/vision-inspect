@@ -86,27 +86,38 @@ export function HistoryList() {
   }
 
   return (
-    <ul className="space-y-2">
+    <ul className="space-y-3">
       {records.map((record) => (
         <li
           key={record.image_id}
-          className="flex flex-wrap items-center justify-between gap-2 rounded-tag border border-steel bg-white px-4 py-3"
+          className="group flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-steel/80 bg-white/90 p-4 shadow-sm backdrop-blur-md transition-all duration-300 hover:border-teal/40 hover:shadow-md hover:-translate-y-0.5"
         >
           <div className="flex items-center gap-3">
             <SeverityBadge severity={record.severity} />
-            <span className="font-body text-sm capitalize text-graphite">
+            <span className="font-body text-sm font-semibold capitalize text-graphite">
               {record.defect_type.replace(/-/g, ' ')}
             </span>
           </div>
           <div className="flex items-center gap-3">
-            <span className="font-body text-xs text-graphite-soft">{decisionLabel(record)}</span>
-            <span className="font-mono text-xs text-graphite-soft">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-porcelain-dim px-2.5 py-1 font-body text-xs font-medium text-graphite-soft border border-steel/50">
+              <span
+                className={`h-1.5 w-1.5 rounded-full ${
+                  record.human_decision === 'pending'
+                    ? 'bg-amber-500 animate-pulse'
+                    : record.human_decision === 'confirmed'
+                    ? 'bg-emerald-500'
+                    : 'bg-blue-500'
+                }`}
+              />
+              {decisionLabel(record)}
+            </span>
+            <span className="font-mono text-xs text-graphite-soft/80">
               {new Date(record.created_at).toLocaleDateString()}
             </span>
             <button
               onClick={() => handleDelete(record.image_id)}
               disabled={deletingId === record.image_id}
-              className="ml-2 font-body text-xs text-red-600 hover:text-red-800 disabled:opacity-50"
+              className="ml-1 rounded-lg px-2.5 py-1 font-body text-xs font-medium text-red-600 transition-colors hover:bg-red-50 hover:text-red-700 disabled:opacity-50"
             >
               {deletingId === record.image_id ? 'Deleting...' : 'Delete'}
             </button>

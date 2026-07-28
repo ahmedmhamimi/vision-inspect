@@ -9,9 +9,9 @@ import { Footer } from '@/components/marketing/Footer';
 
 export default function MarketingLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col animate-fade-in">
       <Nav />
-      <main className="flex-1">{children}</main>
+      <main className="flex-1 animate-fade-in-up">{children}</main>
       <Footer />
     </div>
   );

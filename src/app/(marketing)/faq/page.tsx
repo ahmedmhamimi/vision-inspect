@@ -44,16 +44,18 @@ const FAQ_ITEMS = [
 
 export default function FaqPage() {
   return (
-    <div className="mx-auto max-w-3xl px-5 py-16">
-      <p className="font-mono text-xs uppercase tracking-widest text-teal">FAQ</p>
-      <h1 className="mt-3 font-display text-3xl font-medium text-graphite">
-        Common questions
-      </h1>
-      <p className="mt-2 text-sm text-graphite-soft">
-        If something isn&apos;t covered here, reach out and we&apos;ll add it.
-      </p>
+    <div className="mx-auto max-w-3xl px-5 py-16 sm:py-20 animate-fade-in-up">
+      <div className="text-center sm:text-left">
+        <span className="font-mono text-xs font-bold uppercase tracking-widest text-blue-600">FAQ</span>
+        <h1 className="mt-3 font-display text-3xl font-bold tracking-tight text-graphite sm:text-4xl">
+          Common questions
+        </h1>
+        <p className="mt-2 text-sm leading-relaxed text-graphite-soft">
+          If something isn&apos;t covered here, reach out and we&apos;ll add it.
+        </p>
+      </div>
 
-      <div className="mt-8">
+      <div className="mt-10 animate-fade-in-up stagger-1">
         <FaqAccordion items={FAQ_ITEMS} />
       </div>
     </div>

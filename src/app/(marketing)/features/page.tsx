@@ -38,19 +38,24 @@ const FEATURES = [
 
 export default function FeaturesPage() {
   return (
-    <div className="mx-auto max-w-5xl px-5 py-16">
-      <p className="font-mono text-xs uppercase tracking-widest text-teal">Features</p>
-      <h1 className="mt-3 max-w-xl font-display text-3xl font-medium text-graphite">
-        Everything is built around one split: the model proposes, a person decides.
-      </h1>
+    <div className="mx-auto max-w-5xl px-5 py-16 sm:py-20 animate-fade-in-up">
+      <div className="text-center sm:text-left">
+        <span className="font-mono text-xs font-bold uppercase tracking-widest text-blue-600">Platform Capabilities</span>
+        <h1 className="mt-3 max-w-2xl font-display text-3xl font-bold tracking-tight text-graphite sm:text-4xl">
+          Everything is built around one split: the model proposes, a person decides.
+        </h1>
+      </div>
 
-      <div className="mt-10 grid gap-5 sm:grid-cols-2">
-        {FEATURES.map((feature) => (
-          <div key={feature.title} className="evidence-tag relative p-6">
+      <div className="mt-12 grid gap-6 sm:grid-cols-2">
+        {FEATURES.map((feature, i) => (
+          <div
+            key={feature.title}
+            className={`evidence-tag relative p-6 glass-card transition-all duration-300 animate-fade-in-up stagger-${(i % 4) + 1}`}
+          >
             <span className="tag-punch-hole -right-1.5 -top-1.5" aria-hidden="true" />
-            <h2 className="font-display text-base font-medium text-graphite">{feature.title}</h2>
-            <div className="tag-perforation my-3" />
-            <p className="text-sm text-graphite-soft">{feature.body}</p>
+            <h2 className="font-display text-lg font-bold text-graphite">{feature.title}</h2>
+            <div className="tag-perforation my-4" />
+            <p className="text-sm leading-relaxed text-graphite-soft">{feature.body}</p>
           </div>
         ))}
       </div>

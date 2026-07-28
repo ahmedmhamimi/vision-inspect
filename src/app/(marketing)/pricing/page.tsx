@@ -44,35 +44,41 @@ const TIERS = [
 
 export default function PricingPage() {
   return (
-    <div className="mx-auto max-w-5xl px-5 py-16">
-      <p className="font-mono text-xs uppercase tracking-widest text-teal">Pricing</p>
-      <h1 className="mt-3 max-w-xl font-display text-3xl font-medium text-graphite">
-        Start on the pilot tier. Talk to us when you need more.
-      </h1>
+    <div className="mx-auto max-w-5xl px-5 py-16 sm:py-20 animate-fade-in-up">
+      <div className="text-center sm:text-left">
+        <span className="font-mono text-xs font-bold uppercase tracking-widest text-blue-600">Pricing Tiers</span>
+        <h1 className="mt-3 max-w-xl font-display text-3xl font-bold tracking-tight text-graphite sm:text-4xl">
+          Start on the pilot tier. Talk to us when you need more.
+        </h1>
+      </div>
 
-      <div className="mt-10 grid gap-5 sm:grid-cols-3">
-        {TIERS.map((tier) => (
+      <div className="mt-12 grid gap-6 sm:grid-cols-3">
+        {TIERS.map((tier, i) => (
           <div
             key={tier.name}
-            className={`flex flex-col rounded-tag border p-6 shadow-tag ${
-              tier.highlighted ? 'border-2 border-teal bg-white' : 'border-steel bg-white'
+            className={`relative flex flex-col rounded-card p-7 transition-all duration-300 animate-fade-in-up stagger-${(i % 3) + 1} ${
+              tier.highlighted
+                ? 'border-2 border-blue-500 bg-white shadow-xl shadow-blue-500/10 scale-[1.03] z-10'
+                : 'border border-steel/80 bg-white/90 shadow-tag hover:border-blue-400/40 hover:shadow-card'
             }`}
           >
             {tier.highlighted && (
-              <span className="mb-3 self-start rounded-tag border border-teal px-2 py-0.5 font-mono text-[11px] uppercase tracking-wide text-teal">
-                Most common
+              <span className="mb-4 inline-flex items-center gap-1 self-start rounded-full bg-blue-50 px-3 py-1 font-mono text-[11px] font-bold uppercase tracking-wider text-blue-600 border border-blue-200 shadow-sm">
+                ★ Most common
               </span>
             )}
-            <h2 className="font-display text-lg font-medium text-graphite">{tier.name}</h2>
-            <p className="mt-1 font-display text-2xl font-medium text-graphite">{tier.price}</p>
-            <p className="mt-2 text-sm text-graphite-soft">{tier.tagline}</p>
+            <h2 className="font-display text-xl font-bold text-graphite">{tier.name}</h2>
+            <p className="mt-2 font-display text-3xl font-extrabold text-slate-900 tracking-tight">{tier.price}</p>
+            <p className="mt-2 text-sm leading-relaxed text-graphite-soft">{tier.tagline}</p>
 
-            <div className="tag-perforation my-4" />
+            <div className="tag-perforation my-5" />
 
-            <ul className="flex-1 space-y-2 text-sm text-graphite-soft">
+            <ul className="flex-1 space-y-3 text-sm font-medium text-graphite-soft">
               {tier.features.map((feature) => (
-                <li key={feature} className="flex items-start gap-2">
-                  <span className="mt-1.5 h-1 w-1 flex-none rounded-full bg-teal" aria-hidden="true" />
+                <li key={feature} className="flex items-center gap-2.5">
+                  <span className="flex h-5 w-5 flex-none items-center justify-center rounded-full bg-blue-50 text-blue-600 font-bold text-xs">
+                    ✓
+                  </span>
                   {feature}
                 </li>
               ))}
@@ -80,10 +86,10 @@ export default function PricingPage() {
 
             <Link
               href={tier.cta.href}
-              className={`touch-target mt-6 inline-flex items-center justify-center rounded-tag px-4 py-2.5 text-sm font-medium ${
+              className={`touch-target mt-8 inline-flex items-center justify-center rounded-full px-5 py-3 text-sm font-semibold transition-all duration-300 ${
                 tier.highlighted
-                  ? 'bg-teal text-porcelain hover:bg-teal-dark'
-                  : 'border border-steel-dark text-graphite hover:bg-porcelain-dim'
+                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-500/25 hover:shadow-lg hover:shadow-blue-500/35 hover:scale-105'
+                  : 'border border-steel-dark/80 bg-white text-graphite hover:bg-porcelain-dim hover:border-steel-dark hover:scale-105'
               }`}
             >
               {tier.cta.label}

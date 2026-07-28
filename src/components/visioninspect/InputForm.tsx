@@ -87,13 +87,17 @@ export function InputForm({ onSubmit, disabled = false }: InputFormProps) {
   };
 
   return (
-    <div className="evidence-tag p-5 sm:p-6">
-      <h2 className="font-display text-fluid-lg font-medium text-graphite">
-        Upload an inspection image
-      </h2>
-      <p className="mt-1 font-body text-sm text-graphite-soft">
-        JPEG, PNG, or WebP — up to 8MB. One image per inspection.
-      </p>
+    <div className="glass-card p-6 sm:p-7 animate-fade-in-up">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="font-display text-fluid-lg font-bold text-graphite tracking-tight">
+            Upload inspection image
+          </h2>
+          <p className="mt-1 font-body text-sm text-graphite-soft">
+            JPEG, PNG, or WebP — up to 8MB. One image per inspection.
+          </p>
+        </div>
+      </div>
 
       {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
       <div
@@ -103,8 +107,10 @@ export function InputForm({ onSubmit, disabled = false }: InputFormProps) {
         }}
         onDragLeave={() => setIsDragActive(false)}
         onDrop={handleDrop}
-        className={`mt-4 flex min-h-[220px] flex-col items-center justify-center gap-3 rounded-tag border-2 border-dashed p-6 text-center transition-colors ${
-          isDragActive ? 'border-teal bg-teal/5' : 'border-steel-dark bg-porcelain-dim'
+        className={`group mt-5 flex min-h-[220px] flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed p-6 text-center transition-all duration-300 ${
+          isDragActive
+            ? 'border-blue-500 bg-blue-500/10 scale-[1.01] shadow-lg shadow-blue-500/10'
+            : 'border-steel-dark/70 bg-porcelain-dim/60 hover:border-blue-500/50 hover:bg-white/80'
         }`}
       >
         {previewUrl ? (
@@ -112,14 +118,21 @@ export function InputForm({ onSubmit, disabled = false }: InputFormProps) {
           <img
             src={previewUrl}
             alt="Selected inspection image preview"
-            className="max-h-[280px] max-w-full rounded-tag object-contain"
+            className="max-h-[280px] max-w-full rounded-xl object-contain shadow-md"
           />
         ) : (
           <>
-            <p className="font-body text-sm text-graphite-soft">
-              Drag an image here, or choose a file
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 text-blue-600 shadow-sm border border-blue-100 group-hover:scale-110 transition-transform">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="17 8 12 3 7 8"/>
+                <line x1="12" y1="3" x2="12" y2="15"/>
+              </svg>
+            </div>
+            <p className="font-body text-sm font-medium text-graphite-soft">
+              Drag & drop an image here, or choose a file
             </p>
-            <label className="touch-target inline-flex cursor-pointer items-center rounded-tag border border-teal bg-teal px-4 py-2 font-body text-sm font-medium text-white transition-colors hover:bg-teal-dark focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-teal">
+            <label className="touch-target inline-flex cursor-pointer items-center rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-2.5 font-body text-sm font-semibold text-white shadow-md shadow-blue-500/20 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/30 hover:scale-105">
               Choose file
               <input
                 ref={inputRef}
@@ -136,18 +149,18 @@ export function InputForm({ onSubmit, disabled = false }: InputFormProps) {
       </div>
 
       {clientError && (
-        <p role="alert" className="mt-3 font-body text-sm text-severity-high">
+        <p role="alert" className="mt-3 font-body text-sm font-medium text-severity-high">
           {clientError}
         </p>
       )}
 
       {selectedFile && (
-        <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+        <div className="mt-5 flex flex-col gap-3 sm:flex-row animate-fade-in">
           <button
             type="button"
             onClick={handleSubmit}
             disabled={disabled}
-            className="touch-target flex-1 rounded-tag bg-teal px-4 py-2 font-body text-sm font-medium text-white transition-colors hover:bg-teal-dark disabled:cursor-not-allowed disabled:opacity-60"
+            className="touch-target flex-1 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-3 font-body text-sm font-semibold text-white shadow-md shadow-blue-500/25 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/35 hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-60"
           >
             Analyze image
           </button>
@@ -155,7 +168,7 @@ export function InputForm({ onSubmit, disabled = false }: InputFormProps) {
             type="button"
             onClick={handleReset}
             disabled={disabled}
-            className="touch-target rounded-tag border border-steel-dark px-4 py-2 font-body text-sm font-medium text-graphite-soft transition-colors hover:bg-porcelain-dim"
+            className="touch-target rounded-full border border-steel-dark/80 bg-white px-5 py-3 font-body text-sm font-semibold text-graphite-soft transition-all duration-300 hover:bg-porcelain-dim hover:text-graphite hover:border-steel-dark"
           >
             Choose a different file
           </button>

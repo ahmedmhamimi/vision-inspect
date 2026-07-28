@@ -19,28 +19,28 @@ export function Nav() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-20 border-b border-steel bg-porcelain/90 backdrop-blur">
-      <div className="mx-auto flex max-w-5xl items-center justify-between px-5 py-4">
-        <Link href="/" className="flex items-center gap-2 font-display text-lg font-medium text-graphite">
-          <span className="inline-flex h-7 w-7 items-center justify-center rounded-tag border-2 border-teal text-xs font-semibold text-teal">
+    <header className="sticky top-0 z-20 border-b border-steel/60 bg-white/80 backdrop-blur-md transition-all">
+      <div className="mx-auto flex max-w-5xl items-center justify-between px-5 py-3.5">
+        <Link href="/" className="group flex items-center gap-2.5 font-display text-lg font-bold text-graphite transition-opacity hover:opacity-90">
+          <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-sky-400 text-xs font-bold text-white shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
             VI
           </span>
-          VisionInspect
+          <span className="tracking-tight text-gradient font-semibold">VisionInspect</span>
         </Link>
 
-        <nav className="hidden items-center gap-6 md:flex">
+        <nav className="hidden items-center gap-7 md:flex">
           {LINKS.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className="text-sm text-graphite-soft transition-colors hover:text-graphite"
+              className="text-sm font-medium text-graphite-soft transition-colors hover:text-teal"
             >
               {link.label}
             </Link>
           ))}
           <Link
             href="/visioninspect"
-            className="touch-target inline-flex items-center rounded-tag bg-teal px-4 py-2 text-sm font-medium text-porcelain shadow-tag transition-colors hover:bg-teal-dark"
+            className="touch-target inline-flex items-center rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-2 text-sm font-semibold text-white shadow-md shadow-blue-500/25 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/35 hover:scale-105"
           >
             Launch app
           </Link>
@@ -49,7 +49,7 @@ export function Nav() {
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
-          className="touch-target inline-flex items-center justify-center rounded-tag border border-steel md:hidden"
+          className="touch-target inline-flex items-center justify-center rounded-xl border border-steel bg-white p-2 text-graphite-soft md:hidden"
           aria-expanded={open}
           aria-label="Toggle navigation menu"
         >
@@ -60,13 +60,13 @@ export function Nav() {
       </div>
 
       {open && (
-        <nav className="flex flex-col gap-1 border-t border-steel px-5 pb-4 md:hidden">
+        <nav className="flex flex-col gap-1 border-t border-steel/60 bg-white/95 px-5 py-4 md:hidden animate-fade-in">
           {LINKS.map((link) => (
             <Link
               key={link.href}
               href={link.href}
               onClick={() => setOpen(false)}
-              className="rounded-tag px-2 py-2.5 text-sm text-graphite-soft hover:bg-porcelain-dim hover:text-graphite"
+              className="rounded-lg px-3 py-2.5 text-sm font-medium text-graphite-soft hover:bg-porcelain-dim hover:text-teal"
             >
               {link.label}
             </Link>
@@ -74,7 +74,7 @@ export function Nav() {
           <Link
             href="/visioninspect"
             onClick={() => setOpen(false)}
-            className="mt-1 inline-flex items-center justify-center rounded-tag bg-teal px-4 py-2.5 text-sm font-medium text-porcelain"
+            className="mt-2 inline-flex items-center justify-center rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-blue-500/20"
           >
             Launch app
           </Link>

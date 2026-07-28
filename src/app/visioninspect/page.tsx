@@ -99,7 +99,7 @@ export default function VisionInspectPage() {
   );
 
   return (
-    <main className="mx-auto max-w-2xl px-4 py-8 sm:px-6 sm:py-12">
+    <main className="mx-auto max-w-2xl px-4 py-8 sm:px-6 sm:py-12 animate-fade-in">
       <header className="mb-8">
         <p className="font-body text-xs uppercase tracking-wide text-graphite-soft">
           VisionInspect
