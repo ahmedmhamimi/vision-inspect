@@ -58,7 +58,18 @@ export async function analyzeAndRoute(input: AnalyzeImageInput): Promise<Inspect
       const hypothesis = await adapter.analyze(input);
       const taxonomy = await getKnowledgeRegistry().getTaxonomy();
       const imageId = randomUUID();
-      const record = routeDefect(hypothesis, imageId, taxonomy);
+      const routedRecord = routeDefect(hypothesis, imageId, taxonomy);
+
+      // Attach the original image here, at the integration layer, rather than inside
+      // routeDefect() itself — routeDefect is a pure deterministic tool (see
+      // tool-rules.ts) and must stay that way. Persisting the image is a storage
+      // concern, so it's bolted on right before the one saveRecord() call that
+      // persists this record for the first time.
+      const record: InspectionRecord = {
+        ...routedRecord,
+        image_base64: input.imageBuffer.toString('base64'),
+        mime_type: input.mimeType,
+      };
 
       await getReportSink().saveRecord(record);
       return record;

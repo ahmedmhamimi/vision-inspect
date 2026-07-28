@@ -31,6 +31,36 @@ interface InspectionRecordRow {
   created_at: string;
   confirmed_at: string | null;
   reviewer_note: string | null;
+  // Postgres bytea. PostgREST serializes bytea as a Postgres hex-encoded string, e.g.
+  // "\x89504e470d0a1a0a...", both on the way in (what we must send) and on the way out
+  // (what we get back) — see imageToBytea()/byteaToImage() below. Absent from the
+  // lightweight columns list() selects, present only when a single record is fetched.
+  image_data?: string | null;
+  mime_type: InspectionRecord['mime_type'] | null;
+}
+
+/** Column list used for history/list views: everything except the image payload itself,
+ *  so listing 50 records doesn't pull potentially megabytes of image data over the wire
+ *  just to render a summary row. The "Info" button fetches the full record (including
+ *  the image) on demand via getRecord(). */
+const SUMMARY_COLUMNS =
+  'image_id, defect_type, visible_evidence, location, severity, confidence, ' +
+  'recommended_action, human_decision, notes, taxonomy_reference, degraded, ' +
+  'degraded_reason, created_at, confirmed_at, reviewer_note, mime_type';
+
+/** Converts a base64 image string into the Postgres hex-bytea text format PostgREST
+ *  expects for bytea columns on insert (a string beginning with "\x"). */
+function imageToBytea(imageBase64: string | undefined): string | null {
+  if (!imageBase64) return null;
+  return '\\x' + Buffer.from(imageBase64, 'base64').toString('hex');
+}
+
+/** Reverses imageToBytea(): converts the hex-bytea text PostgREST returns for a bytea
+ *  column back into the base64 string the rest of the app works with. */
+function byteaToImage(bytea: string | null | undefined): string | undefined {
+  if (!bytea) return undefined;
+  const hex = bytea.startsWith('\\x') ? bytea.slice(2) : bytea;
+  return Buffer.from(hex, 'hex').toString('base64');
 }
 
 interface InspectionReportRow {
@@ -74,6 +104,8 @@ export class SupabaseStorageAdapter implements ReportSinkPort {
       created_at: record.created_at,
       confirmed_at: record.confirmed_at ?? null,
       reviewer_note: record.reviewer_note ?? null,
+      image_data: imageToBytea(record.image_base64),
+      mime_type: record.mime_type ?? null,
     };
 
     const { error } = await this.client
@@ -83,6 +115,8 @@ export class SupabaseStorageAdapter implements ReportSinkPort {
     if (error) throw new Error(`SupabaseStorageAdapter.saveRecord: ${error.message}`);
   }
 
+  /** Fetches a single record WITH its full image payload — used by the "Info" panel in
+   *  history, and by anything that needs the complete record, not just a summary row. */
   async getRecord(imageId: string): Promise<InspectionRecord | null> {
     const { data, error } = await this.client
       .from('inspection_records')
@@ -95,15 +129,17 @@ export class SupabaseStorageAdapter implements ReportSinkPort {
     return rowToRecord(data as InspectionRecordRow);
   }
 
+  /** Lists summary rows only (no image_data) — see SUMMARY_COLUMNS. Keeps the history
+   *  view fast regardless of how many images have accumulated. */
   async listRecords(limit = 50): Promise<InspectionRecord[]> {
     const { data, error } = await this.client
       .from('inspection_records')
-      .select('*')
+      .select(SUMMARY_COLUMNS)
       .order('created_at', { ascending: false })
       .limit(limit);
 
     if (error) throw new Error(`SupabaseStorageAdapter.listRecords: ${error.message}`);
-    return (data ?? []).map((row) => rowToRecord(row as InspectionRecordRow));
+    return (data ?? []).map((row) => rowToRecord(row as unknown as InspectionRecordRow));
   }
 
   async saveReport(report: InspectionReport): Promise<void> {
@@ -162,5 +198,7 @@ function rowToRecord(row: InspectionRecordRow): InspectionRecord {
     created_at: new Date(row.created_at).toISOString(),
     confirmed_at: row.confirmed_at ? new Date(row.confirmed_at).toISOString() : undefined,
     reviewer_note: row.reviewer_note ?? undefined,
+    image_base64: byteaToImage(row.image_data),
+    mime_type: row.mime_type ?? undefined,
   };
 }

@@ -80,6 +80,14 @@ export const InspectionRecordSchema = z.object({
   created_at: z.string().datetime(),
   confirmed_at: z.string().datetime().optional(),
   reviewer_note: z.string().max(2000).optional(),
+  // The original uploaded image, base64-encoded, persisted alongside the record so the
+  // full inspection (not just its diagnosis) can be reviewed later from history — see
+  // components/visioninspect/InfoModal.tsx. Stored as bytea in Supabase (genuinely
+  // binary on disk) and surfaced to the app layer as base64 text, which is what the
+  // browser needs to render it via a data: URI. Optional because records saved before
+  // this field existed have no image on file.
+  image_base64: z.string().optional(),
+  mime_type: z.enum(['image/jpeg', 'image/png', 'image/webp']).optional(),
 });
 export type InspectionRecord = z.infer<typeof InspectionRecordSchema>;
 

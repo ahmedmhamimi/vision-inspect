@@ -23,7 +23,12 @@ create table if not exists inspection_records (
   degraded_reason     text,
   created_at          timestamptz not null,
   confirmed_at        timestamptz,
-  reviewer_note       text
+  reviewer_note       text,
+  -- The original uploaded image, stored as genuine binary data (bytea), plus the mime
+  -- type needed to render it back client-side (data:<mime_type>;base64,...). Nullable
+  -- so rows created before this column existed remain valid.
+  image_data          bytea,
+  mime_type           text check (mime_type in ('image/jpeg','image/png','image/webp'))
 );
 
 create index if not exists inspection_records_created_at_idx
@@ -31,7 +36,7 @@ create index if not exists inspection_records_created_at_idx
 
 create table if not exists inspection_reports (
   report_id             uuid primary key,
-  image_id              uuid not null references inspection_records (image_id),
+  image_id              uuid not null references inspection_records (image_id) on delete cascade,
   generated_at          timestamptz not null,
   summary               text not null,
   -- Stored as jsonb to mirror the nested object shape of InspectionReport exactly,

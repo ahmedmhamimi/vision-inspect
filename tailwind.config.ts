@@ -5,30 +5,30 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        porcelain: '#F8FAFC',
-        'porcelain-dim': '#F1F5F9',
+        porcelain: '#FFF7FB',
+        'porcelain-dim': '#FDF0F5',
 
-        graphite: '#0F172A',
-        'graphite-soft': '#475569',
+        graphite: '#3F4A55',
+        'graphite-soft': '#6D7C8A',
 
-        steel: '#E2E8F0',
-        'steel-dark': '#CBD5E1',
+        steel: '#D8E2EA',
+        'steel-dark': '#C3CFD8',
 
         teal: {
-          DEFAULT: '#2563EB',
-          dark: '#1D4ED8',
-          light: '#3B82F6',
+          DEFAULT: '#F7B2C4',
+          dark: '#E89DB2',
+          light: '#FBD0DB',
         },
 
         severity: {
-          low: '#15803D',
-          'low-bg': '#DCFCE7',
+          low: '#7AA67D',
+          'low-bg': '#EEF7EF',
 
-          medium: '#B45309',
-          'medium-bg': '#FEF3C7',
+          medium: '#C9A248',
+          'medium-bg': '#FBF2C4',
 
-          high: '#BE123C',
-          'high-bg': '#FFE4E6',
+          high: '#D96B87',
+          'high-bg': '#FCE7EE',
         },
       },
 
@@ -39,7 +39,7 @@ const config: Config = {
       },
 
       fontSize: {
-        'fluid-hero': 'clamp(2rem, 1.4rem + 2.5vw, 3.5rem)',
+        'fluid-hero': 'clamp(1.75rem, 1.2rem + 2.2vw, 3rem)',
         'fluid-lg': 'clamp(1.25rem, 1.05rem + 0.8vw, 1.75rem)',
       },
 
@@ -49,15 +49,14 @@ const config: Config = {
       },
 
       boxShadow: {
-        tag: '0 10px 30px -10px rgba(15, 23, 42, 0.06), 0 4px 6px -2px rgba(15, 23, 42, 0.03)',
-        card: '0 20px 40px -15px rgba(15, 23, 42, 0.08)',
-        stamp: '0 0 0 1px rgba(37, 99, 235, 0.25)',
-        glow: '0 0 25px -5px rgba(37, 99, 235, 0.3)',
+        tag: '0 8px 24px rgba(109, 124, 138, 0.08)',
+        stamp: '0 0 0 1px rgba(247, 178, 196, 0.35)',
+        card: '0 20px 45px rgba(63, 74, 85, 0.14)',
       },
 
       backgroundImage: {
         perforation:
-          'repeating-linear-gradient(to bottom, transparent 0, transparent 6px, #CBD5E1 6px, #CBD5E1 8px)',
+        'repeating-linear-gradient(to bottom, transparent 0, transparent 6px, #D8E2EA 6px, #D8E2EA 8px)',
       },
     },
   },

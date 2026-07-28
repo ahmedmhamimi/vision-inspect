@@ -59,6 +59,9 @@ export class ReportStorageAdapter implements ReportSinkPort {
     }
   }
 
+  /** Lists summary rows only — image_base64 is stripped out, same as
+   *  SupabaseStorageAdapter.listRecords, so the history view stays light regardless of
+   *  storage backend. getRecord() still returns the full record, image included. */
   async listRecords(limit = 50): Promise<InspectionRecord[]> {
     await this.ensureDirs();
     const files = await readdir(this.recordsDir());
@@ -67,7 +70,8 @@ export class ReportStorageAdapter implements ReportSinkPort {
     const records: InspectionRecord[] = [];
     for (const file of jsonFiles) {
       const raw = await readFile(join(this.recordsDir(), file), 'utf-8');
-      records.push(JSON.parse(raw) as InspectionRecord);
+      const { image_base64: _image_base64, ...summary } = JSON.parse(raw) as InspectionRecord;
+      records.push(summary as InspectionRecord);
     }
 
     return records

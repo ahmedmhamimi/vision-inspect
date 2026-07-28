@@ -13,6 +13,7 @@ import type { InspectionRecord } from '@/lib/visioninspect/schema';
 import { LoadingState } from '@/components/common/LoadingState';
 import { ErrorState } from '@/components/common/ErrorState';
 import { SeverityBadge } from './EvidencePanel';
+import { InfoModal } from './InfoModal';
 
 function decisionLabel(record: InspectionRecord): string {
   if (record.human_decision === 'pending') return 'Awaiting review';
@@ -25,6 +26,7 @@ export function HistoryList() {
   const [error, setError] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [infoImageId, setInfoImageId] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -67,6 +69,13 @@ export function HistoryList() {
     }
   }
 
+  // Placeholder only — no chatbot exists yet. The button is here now so the layout and
+  // wiring are in place; this handler just gets swapped out for a real navigation/open
+  // action once the chatbot ships.
+  function handleChat(imageId: string) {
+    alert(`Chat about inspection ${imageId.slice(0, 8)} is coming soon.`);
+  }
+
   if (error) {
     return <ErrorState message={error} onRetry={() => setReloadKey((k) => k + 1)} />;
   }
@@ -86,7 +95,8 @@ export function HistoryList() {
   }
 
   return (
-    <ul className="space-y-3">
+    <>
+      <ul className="space-y-3">
       {records.map((record) => (
         <li
           key={record.image_id}
@@ -115,9 +125,21 @@ export function HistoryList() {
               {new Date(record.created_at).toLocaleDateString()}
             </span>
             <button
+              onClick={() => setInfoImageId(record.image_id)}
+              className="ml-1 rounded-lg border border-steel/60 px-2.5 py-1 font-body text-xs font-medium text-graphite transition-colors hover:bg-porcelain-dim"
+            >
+              Info
+            </button>
+            <button
+              onClick={() => handleChat(record.image_id)}
+              className="rounded-lg border border-teal/50 px-2.5 py-1 font-body text-xs font-medium text-teal-dark transition-colors hover:bg-teal/10"
+            >
+              Chat
+            </button>
+            <button
               onClick={() => handleDelete(record.image_id)}
               disabled={deletingId === record.image_id}
-              className="ml-1 rounded-lg px-2.5 py-1 font-body text-xs font-medium text-red-600 transition-colors hover:bg-red-50 hover:text-red-700 disabled:opacity-50"
+              className="rounded-lg px-2.5 py-1 font-body text-xs font-medium text-red-600 transition-colors hover:bg-red-50 hover:text-red-700 disabled:opacity-50"
             >
               {deletingId === record.image_id ? 'Deleting...' : 'Delete'}
             </button>
@@ -125,5 +147,9 @@ export function HistoryList() {
         </li>
       ))}
     </ul>
+      {infoImageId && (
+        <InfoModal imageId={infoImageId} onClose={() => setInfoImageId(null)} />
+      )}
+    </>
   );
 }
