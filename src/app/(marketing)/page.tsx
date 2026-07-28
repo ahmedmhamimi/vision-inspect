@@ -122,7 +122,7 @@ export default function LandingPage() {
             Try it on your own inspection image
           </h2>
           <p className="mx-auto mt-2 max-w-md text-sm text-porcelain/70">
-            No setup beyond an upload. The AI's hypothesis is waiting for your sign-off, not
+            No setup beyond an upload. The AI&apos;s hypothesis is waiting for your sign-off, not
             the other way around.
           </p>
           <Link
