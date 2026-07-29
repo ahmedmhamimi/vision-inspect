@@ -14,13 +14,19 @@
  *   service layer tries in sequence.
  * - getKnowledgeRegistry(): returns the taxonomy source.
  * - getReportSink(): returns the persistence adapter.
+ * - getChatProvider(): returns the adapter that answers per-image chat turns. Unlike the
+ *   other three, this one has no fallback chain — a chat failure just surfaces as "try
+ *   again", since it's a conversational nice-to-have layered on top of an inspection
+ *   that has already been analyzed and (usually) confirmed, not the core pipeline.
  * - resetCompositionForTests(): allows tests to inject fakes without needing real env vars.
  */
 import { GeminiVisionAdapter } from './adapters/gemini-vision.adapter';
 import { GroqFallbackAdapter } from './adapters/groq-fallback.adapter';
+import { GeminiChatAdapter } from './adapters/gemini-chat.adapter';
 import { ReportStorageAdapter } from './adapters/report-storage.adapter';
 import { SupabaseStorageAdapter } from './adapters/supabase-storage.adapter';
 import { TaxonomyRegistryAdapter } from './adapters/taxonomy-registry.adapter';
+import type { ChatPort } from './ports/chat.port';
 import type { KnowledgeRegistryPort } from './ports/knowledge-registry.port';
 import type { ReportSinkPort } from './ports/report-sink.port';
 import type { VisionAnalysisPort } from './ports/vision-analysis.port';
@@ -28,6 +34,7 @@ import type { VisionAnalysisPort } from './ports/vision-analysis.port';
 let visionChainOverride: VisionAnalysisPort[] | null = null;
 let knowledgeRegistryOverride: KnowledgeRegistryPort | null = null;
 let reportSinkOverride: ReportSinkPort | null = null;
+let chatProviderOverride: ChatPort | null = null;
 
 /** Returns the ordered chain of vision-analysis providers to try: Gemini first, Groq as
  *  the degraded fallback if Gemini throws. service.ts is responsible for the try/catch
@@ -52,6 +59,11 @@ export function getReportSink(): ReportSinkPort {
   return new ReportStorageAdapter();
 }
 
+export function getChatProvider(): ChatPort {
+  if (chatProviderOverride) return chatProviderOverride;
+  return new GeminiChatAdapter();
+}
+
 /**
  * Test-only override hooks. Used by tests/api/visioninspect.test.ts to inject
  * FakeVisionAdapter and in-memory port implementations without requiring real API keys
@@ -61,14 +73,17 @@ export function __setCompositionForTests(overrides: {
   visionChain?: VisionAnalysisPort[];
   knowledgeRegistry?: KnowledgeRegistryPort;
   reportSink?: ReportSinkPort;
+  chatProvider?: ChatPort;
 }): void {
   if (overrides.visionChain) visionChainOverride = overrides.visionChain;
   if (overrides.knowledgeRegistry) knowledgeRegistryOverride = overrides.knowledgeRegistry;
   if (overrides.reportSink) reportSinkOverride = overrides.reportSink;
+  if (overrides.chatProvider) chatProviderOverride = overrides.chatProvider;
 }
 
 export function __resetCompositionForTests(): void {
   visionChainOverride = null;
   knowledgeRegistryOverride = null;
   reportSinkOverride = null;
+  chatProviderOverride = null;
 }

@@ -9,11 +9,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import type { InspectionRecord } from '@/lib/visioninspect/schema';
+import type { ChatMessage, InspectionRecord } from '@/lib/visioninspect/schema';
 import { LoadingState } from '@/components/common/LoadingState';
 import { ErrorState } from '@/components/common/ErrorState';
 import { SeverityBadge } from './EvidencePanel';
 import { InfoModal } from './InfoModal';
+import { ChatModal } from './ChatModal';
 
 function decisionLabel(record: InspectionRecord): string {
   if (record.human_decision === 'pending') return 'Awaiting review';
@@ -27,6 +28,12 @@ export function HistoryList() {
   const [reloadKey, setReloadKey] = useState(0);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [infoImageId, setInfoImageId] = useState<string | null>(null);
+  const [chatImageId, setChatImageId] = useState<string | null>(null);
+  // Keyed by image_id, one transcript per inspection. Lives only in this component's
+  // state for the life of the page — never sent anywhere except one turn at a time to
+  // /api/visioninspect/chat, and never persisted. Reopening the chat for the same image
+  // within this session picks the conversation back up; a page refresh clears it.
+  const [chatHistories, setChatHistories] = useState<Record<string, ChatMessage[]>>({});
 
   useEffect(() => {
     let cancelled = false;
@@ -69,11 +76,12 @@ export function HistoryList() {
     }
   }
 
-  // Placeholder only — no chatbot exists yet. The button is here now so the layout and
-  // wiring are in place; this handler just gets swapped out for a real navigation/open
-  // action once the chatbot ships.
   function handleChat(imageId: string) {
-    alert(`Chat about inspection ${imageId.slice(0, 8)} is coming soon.`);
+    setChatImageId(imageId);
+  }
+
+  function handleChatMessagesChange(imageId: string, msgs: ChatMessage[]) {
+    setChatHistories((prev) => ({ ...prev, [imageId]: msgs }));
   }
 
   if (error) {
@@ -149,6 +157,14 @@ export function HistoryList() {
     </ul>
       {infoImageId && (
         <InfoModal imageId={infoImageId} onClose={() => setInfoImageId(null)} />
+      )}
+      {chatImageId && (
+        <ChatModal
+          imageId={chatImageId}
+          messages={chatHistories[chatImageId] ?? []}
+          onMessagesChange={handleChatMessagesChange}
+          onClose={() => setChatImageId(null)}
+        />
       )}
     </>
   );

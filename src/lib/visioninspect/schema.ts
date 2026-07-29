@@ -143,3 +143,27 @@ export const ConfirmRequestSchema = z.object({
   reviewer_note: z.string().max(2000).optional(),
 });
 export type ConfirmRequest = z.infer<typeof ConfirmRequestSchema>;
+
+/**
+ * A single turn in the per-image chat. Deliberately NOT part of InspectionRecord or any
+ * persisted schema — the chat is entirely ephemeral (see docs on ChatModal.tsx and
+ * chat/route.ts). The client holds the full transcript in memory for the life of the
+ * page and resends it with every turn; the server never stores it anywhere.
+ */
+export const ChatMessageSchema = z.object({
+  role: z.enum(['user', 'assistant']),
+  content: z.string().min(1).max(4000),
+});
+export type ChatMessage = z.infer<typeof ChatMessageSchema>;
+
+/** Request body for POST /api/visioninspect/chat. */
+export const ChatRequestSchema = z.object({
+  image_id: z.string().uuid(),
+  message: z.string().min(1).max(2000),
+  // Prior turns only — the new user message goes in `message`, not appended here. Capped
+  // well below any provider context limit; a reviewer chatting about one image for that
+  // long is not a case this feature needs to optimize for.
+  history: z.array(ChatMessageSchema).max(40).default([]),
+});
+export type ChatRequest = z.infer<typeof ChatRequestSchema>;
+

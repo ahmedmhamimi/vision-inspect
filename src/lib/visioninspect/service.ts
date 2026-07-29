@@ -12,17 +12,23 @@
  * - generateAndSaveReport(imageId): generates the report for a confirmed record and
  *   persists it — throws UnconfirmedRecordError (via generateInspectionReport) if the
  *   record is not actually confirmed.
+ * - chatAboutInspection(imageId, history, message): answers one turn of the ephemeral
+ *   per-image chat. Deliberately does not touch the report sink except to *read* the
+ *   record it needs for grounding — nothing about the conversation itself is persisted,
+ *   by design (see ChatModal.tsx and chat/route.ts).
  */
 import { randomUUID } from 'crypto';
 import {
+  getChatProvider,
   getKnowledgeRegistry,
   getReportSink,
   getVisionAnalysisChain,
 } from './composition-root';
-import type { ConfirmRequest, InspectionRecord, InspectionReport } from './schema';
+import type { ChatMessage, ConfirmRequest, InspectionRecord, InspectionReport } from './schema';
 import { ConfirmedInspectionRecordSchema } from './schema';
 import { applyHumanDecision, generateInspectionReport, routeDefect } from './tool-rules';
 import { VisionAnalysisError, type AnalyzeImageInput } from './ports/vision-analysis.port';
+import { ChatError } from './ports/chat.port';
 
 export class AnalysisUnavailableError extends Error {
   constructor(public readonly attempts: { provider: string; message: string }[]) {
@@ -38,6 +44,13 @@ export class RecordNotFoundError extends Error {
   constructor(imageId: string) {
     super(`No inspection record found for image_id "${imageId}".`);
     this.name = 'RecordNotFoundError';
+  }
+}
+
+export class ChatUnavailableError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'ChatUnavailableError';
   }
 }
 
@@ -142,4 +155,34 @@ export async function deleteInspection(imageId: string): Promise<void> {
   // We check if it exists first just to throw 404 cleanly if not, but it's optional.
   // Actually, sink.deleteRecord might not throw if not exists, but let's keep it simple.
   await sink.deleteRecord(imageId);
+}
+
+/**
+ * Answers one turn of the per-image chat. Reads the record (for grounding: the image, the
+ * AI hypothesis, the routing, the human decision) but writes nothing — the chat transcript
+ * itself lives only in the caller's memory for this one request and in the browser tab
+ * that's driving it, never in the report sink or anywhere else. That's a deliberate
+ * product decision (see ChatModal.tsx), not just an unimplemented feature.
+ */
+export async function chatAboutInspection(
+  imageId: string,
+  history: ChatMessage[],
+  message: string,
+): Promise<string> {
+  const record = await getReportSink().getRecord(imageId);
+  if (!record) {
+    throw new RecordNotFoundError(imageId);
+  }
+
+  try {
+    return await getChatProvider().reply({ record, history, message });
+  } catch (err) {
+    if (err instanceof ChatError) {
+      console.error(`[visioninspect:chatAboutInspection] Provider "${err.provider}" failed: ${err.message}`);
+      throw new ChatUnavailableError(
+        'The chat assistant is temporarily unavailable. Please try again shortly.',
+      );
+    }
+    throw err;
+  }
 }
