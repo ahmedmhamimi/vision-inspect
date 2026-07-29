@@ -167,8 +167,9 @@ export function ChatModal({ imageId, messages, onMessagesChange, onClose }: Chat
           {record && messages.length === 0 && (
             <div className="rounded-tag border border-dashed border-steel-dark bg-porcelain-dim p-4 text-center">
               <p className="font-body text-sm text-graphite-soft">
-                Ask anything about this image — what&apos;s visible, why it was routed this
-                way, or what the reviewer decided.
+                Ask about the recorded evidence, why it was routed this way, or what the
+                reviewer decided. This assistant works from the recorded findings, not
+                live image vision.
               </p>
             </div>
           )}
