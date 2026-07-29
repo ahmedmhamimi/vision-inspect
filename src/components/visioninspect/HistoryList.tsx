@@ -108,7 +108,7 @@ export function HistoryList() {
       {records.map((record) => (
         <li
           key={record.image_id}
-          className="group flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-steel/80 bg-white/90 p-4 shadow-sm backdrop-blur-md transition-all duration-300 hover:border-teal/40 hover:shadow-md hover:-translate-y-0.5"
+          className="group flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-steel/80 bg-white/90 p-4 shadow-sm backdrop-blur-md transition-all duration-300 hover:border-steel-dark hover:shadow-md hover:-translate-y-0.5"
         >
           <div className="flex items-center gap-3">
             <SeverityBadge severity={record.severity} />
@@ -140,7 +140,7 @@ export function HistoryList() {
             </button>
             <button
               onClick={() => handleChat(record.image_id)}
-              className="rounded-lg border border-teal/50 px-2.5 py-1 font-body text-xs font-medium text-teal-dark transition-colors hover:bg-teal/10"
+              className="rounded-lg border border-graphite/40 px-2.5 py-1 font-body text-xs font-medium text-graphite transition-colors hover:bg-graphite hover:text-white"
             >
               Chat
             </button>

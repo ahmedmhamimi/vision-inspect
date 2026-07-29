@@ -182,7 +182,7 @@ export function ChatModal({ imageId, messages, onMessagesChange, onClose }: Chat
               <div
                 className={`max-w-[85%] whitespace-pre-wrap rounded-2xl px-3.5 py-2 font-body text-sm ${
                   msg.role === 'user'
-                    ? 'bg-teal text-white'
+                    ? 'bg-graphite text-white'
                     : 'border border-steel/70 bg-white text-graphite'
                 }`}
               >
@@ -194,9 +194,9 @@ export function ChatModal({ imageId, messages, onMessagesChange, onClose }: Chat
           {sending && (
             <div className="flex justify-start">
               <div className="flex items-center gap-2 rounded-2xl border border-steel/70 bg-white px-3.5 py-2">
-                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-teal" />
-                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-teal [animation-delay:150ms]" />
-                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-teal [animation-delay:300ms]" />
+                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-graphite-soft" />
+                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-graphite-soft [animation-delay:150ms]" />
+                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-graphite-soft [animation-delay:300ms]" />
               </div>
             </div>
           )}
@@ -214,13 +214,13 @@ export function ChatModal({ imageId, messages, onMessagesChange, onClose }: Chat
               onKeyDown={handleKeyDownInput}
               disabled={!record || sending}
               placeholder="Ask about this inspection…"
-              className="touch-target flex-1 rounded-tag border border-steel bg-white px-3 py-2 font-body text-sm text-graphite placeholder:text-graphite-soft/70 focus:border-teal focus:outline-none disabled:opacity-50"
+              className="touch-target flex-1 rounded-tag border border-steel bg-white px-3 py-2 font-body text-sm text-graphite placeholder:text-graphite-soft/70 focus:border-graphite focus:outline-none disabled:opacity-50"
             />
             <button
               type="button"
               onClick={() => void handleSend()}
               disabled={!record || sending || !input.trim()}
-              className="touch-target shrink-0 rounded-tag bg-teal px-4 py-2 font-body text-sm font-medium text-white transition-colors hover:bg-teal-dark disabled:opacity-50"
+              className="touch-target shrink-0 rounded-tag bg-graphite px-4 py-2 font-body text-sm font-medium text-white transition-colors hover:bg-graphite-soft disabled:opacity-50"
             >
               Send
             </button>
