@@ -38,6 +38,18 @@ export class InMemoryReportSink implements ReportSinkPort {
     this.reports.set(report.report_id, report);
   }
 
+  /** Mirrors ReportStorageAdapter's semantics: the most recently generated report whose
+   *  image_id matches, or null if none has been generated yet for that image. */
+  async getReportForImage(imageId: string): Promise<InspectionReport | null> {
+    const matches = Array.from(this.reports.values()).filter(
+      (report) => report.image_id === imageId,
+    );
+    if (matches.length === 0) return null;
+    return matches.reduce((latest, current) =>
+      current.generated_at > latest.generated_at ? current : latest,
+    );
+  }
+
   /** Test-only helper, not part of ReportSinkPort. */
   getSavedReports(): InspectionReport[] {
     return [...this.reports.values()];
