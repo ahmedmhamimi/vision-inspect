@@ -115,6 +115,31 @@ export class ReportStorageAdapter implements ReportSinkPort {
       if (!isNotFoundError(err)) throw err;
     }
   }
+
+  /** Scans the flat-file reports directory for the one matching image_id. Fine at the
+   *  small-pilot scale this adapter targets (see file header); a real database backend
+   *  (SupabaseStorageAdapter) does this with an indexed query instead. */
+  async getReportForImage(imageId: string): Promise<InspectionReport | null> {
+    await this.ensureDirs();
+    let files: string[];
+    try {
+      files = await readdir(this.reportsDir());
+    } catch (err) {
+      if (isNotFoundError(err)) return null;
+      throw err;
+    }
+
+    for (const file of files.filter((f) => f.endsWith('.json'))) {
+      try {
+        const raw = await readFile(join(this.reportsDir(), file), 'utf-8');
+        const report = JSON.parse(raw) as InspectionReport;
+        if (report.image_id === imageId) return report;
+      } catch (err) {
+        if (!isNotFoundError(err)) throw err;
+      }
+    }
+    return null;
+  }
 }
 
 function isNotFoundError(err: unknown): boolean {

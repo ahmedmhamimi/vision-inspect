@@ -33,6 +33,23 @@ import {
 } from '@/lib/visioninspect/tool-rules';
 import { AnalyzeRequestSchema, ConfirmRequestSchema } from '@/lib/visioninspect/schema';
 import { getReportSink } from '@/lib/visioninspect/composition-root';
+import { getCurrentUser, isAuthConfigured } from '@/lib/auth/session';
+
+/** Returns a 401 response if Supabase auth is configured and nobody is signed in;
+ *  otherwise null, meaning the caller should proceed. Mirrors middleware.ts's
+ *  fail-open stance so local dev without Supabase env vars isn't locked out. This is
+ *  the defense-in-depth check for the raw API endpoint — middleware.ts already blocks
+ *  unauthenticated access to the /visioninspect *page*, but a request made directly
+ *  against this route (curl, another client) bypasses page-level middleware routing
+ *  for nothing except the matcher's path prefixes, so the route itself checks too. */
+async function requireApiAuth(): Promise<NextResponse | null> {
+  if (!isAuthConfigured()) return null;
+  const user = await getCurrentUser();
+  if (!user) {
+    return NextResponse.json({ error: 'Authentication required.' }, { status: 401 });
+  }
+  return null;
+}
 
 function clientIdentifier(request: NextRequest): string {
   return (
@@ -81,6 +98,9 @@ function safeErrorResponse(err: unknown, context: string): NextResponse {
 }
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
+  const authError = await requireApiAuth();
+  if (authError) return authError;
+
   const identifier = clientIdentifier(request);
   const rateLimit = checkRateLimit(identifier);
   if (!rateLimit.allowed) {
@@ -97,10 +117,19 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const buffer = Buffer.from(parsedRequest.image_base64, 'base64');
     const validated = validateImageUpload(buffer, parsedRequest.mime_type);
 
-    const record = await analyzeAndRoute({
-      imageBuffer: validated.buffer,
-      mimeType: validated.mimeType,
-    });
+    // requireApiAuth() above already confirmed there's a session whenever auth is
+    // configured; this just re-reads it to get the id to stamp onto the record. When
+    // auth isn't configured this is undefined and the record is simply saved without an
+    // owner — analyzeAndRoute/schema.ts both treat created_by as optional.
+    const user = await getCurrentUser().catch(() => null);
+
+    const record = await analyzeAndRoute(
+      {
+        imageBuffer: validated.buffer,
+        mimeType: validated.mimeType,
+      },
+      user?.id,
+    );
 
     return NextResponse.json({ record }, { status: 201 });
   } catch (err) {
@@ -109,6 +138,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 }
 
 export async function PATCH(request: NextRequest): Promise<NextResponse> {
+  const authError = await requireApiAuth();
+  if (authError) return authError;
+
   try {
     const body = await request.json();
     const decision = ConfirmRequestSchema.parse(body);
@@ -123,6 +155,9 @@ export async function PATCH(request: NextRequest): Promise<NextResponse> {
 }
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
+  const authError = await requireApiAuth();
+  if (authError) return authError;
+
   try {
     const imageId = request.nextUrl.searchParams.get('image_id');
 
@@ -142,6 +177,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 }
 
 export async function DELETE(request: NextRequest): Promise<NextResponse> {
+  const authError = await requireApiAuth();
+  if (authError) return authError;
+
   try {
     const imageId = request.nextUrl.searchParams.get('image_id');
     if (!imageId) {

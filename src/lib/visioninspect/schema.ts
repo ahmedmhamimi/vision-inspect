@@ -88,6 +88,12 @@ export const InspectionRecordSchema = z.object({
   // this field existed have no image on file.
   image_base64: z.string().optional(),
   mime_type: z.enum(['image/jpeg', 'image/png', 'image/webp']).optional(),
+  // The authenticated reviewer who ran this inspection, set server-side from the Supabase
+  // Auth session in the Route Handler — never trusted from the request body. Optional
+  // because records saved before authentication existed (or via the file-storage
+  // adapter, which has no notion of users) have no owner on file. Powers the admin
+  // dashboard's "submitted by" column; see migrations/002_add_authentication.sql.
+  created_by: z.string().uuid().optional(),
 });
 export type InspectionRecord = z.infer<typeof InspectionRecordSchema>;
 

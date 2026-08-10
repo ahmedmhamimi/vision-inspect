@@ -5,8 +5,8 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        porcelain: '#FFF7FB',
-        'porcelain-dim': '#FDF0F5',
+        porcelain: '#F4F8FD',
+        'porcelain-dim': '#E9F1FB',
 
         graphite: '#3F4A55',
         'graphite-soft': '#6D7C8A',
@@ -15,9 +15,9 @@ const config: Config = {
         'steel-dark': '#C3CFD8',
 
         teal: {
-          DEFAULT: '#F7B2C4',
-          dark: '#E89DB2',
-          light: '#FBD0DB',
+          DEFAULT: '#2563EB',
+          dark: '#1D4ED8',
+          light: '#60A5FA',
         },
 
         severity: {
@@ -27,8 +27,8 @@ const config: Config = {
           medium: '#C9A248',
           'medium-bg': '#FBF2C4',
 
-          high: '#D96B87',
-          'high-bg': '#FCE7EE',
+          high: '#DC2626',
+          'high-bg': '#FDECEC',
         },
       },
 
@@ -50,7 +50,7 @@ const config: Config = {
 
       boxShadow: {
         tag: '0 8px 24px rgba(109, 124, 138, 0.08)',
-        stamp: '0 0 0 1px rgba(247, 178, 196, 0.35)',
+        stamp: '0 0 0 1px rgba(37, 99, 235, 0.35)',
         card: '0 20px 45px rgba(63, 74, 85, 0.14)',
       },
 

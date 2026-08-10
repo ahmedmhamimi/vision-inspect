@@ -30,4 +30,9 @@ export interface ReportSinkPort {
 
   /** Deletes a saved record and its associated report. */
   deleteRecord(imageId: string): Promise<void>;
+
+  /** Loads the generated report for a given image, or null if none has been generated
+   *  yet (e.g. the record is still pending human confirmation). Backs the admin
+   *  dashboard's record-detail view — see app/admin/records/[imageId]/page.tsx. */
+  getReportForImage(imageId: string): Promise<InspectionReport | null>;
 }

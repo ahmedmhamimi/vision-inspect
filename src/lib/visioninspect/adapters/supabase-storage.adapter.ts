@@ -37,6 +37,9 @@ interface InspectionRecordRow {
   // lightweight columns list() selects, present only when a single record is fetched.
   image_data?: string | null;
   mime_type: InspectionRecord['mime_type'] | null;
+  // The auth.users id of the reviewer who ran this inspection. Nullable — see
+  // migrations/002_add_authentication.sql and the created_by comment in schema.ts.
+  created_by?: string | null;
 }
 
 /** Column list used for history/list views: everything except the image payload itself,
@@ -46,7 +49,7 @@ interface InspectionRecordRow {
 const SUMMARY_COLUMNS =
   'image_id, defect_type, visible_evidence, location, severity, confidence, ' +
   'recommended_action, human_decision, notes, taxonomy_reference, degraded, ' +
-  'degraded_reason, created_at, confirmed_at, reviewer_note, mime_type';
+  'degraded_reason, created_at, confirmed_at, reviewer_note, mime_type, created_by';
 
 /** Converts a base64 image string into the Postgres hex-bytea text format PostgREST
  *  expects for bytea columns on insert (a string beginning with "\x"). */
@@ -106,6 +109,7 @@ export class SupabaseStorageAdapter implements ReportSinkPort {
       reviewer_note: record.reviewer_note ?? null,
       image_data: imageToBytea(record.image_base64),
       mime_type: record.mime_type ?? null,
+      created_by: record.created_by ?? null,
     };
 
     const { error } = await this.client
@@ -175,6 +179,28 @@ export class SupabaseStorageAdapter implements ReportSinkPort {
       throw new Error(`Failed to delete record from Supabase: ${recordError.message}`);
     }
   }
+
+  async getReportForImage(imageId: string): Promise<InspectionReport | null> {
+    const { data, error } = await this.client
+      .from('inspection_reports')
+      .select('*')
+      .eq('image_id', imageId)
+      .maybeSingle();
+
+    if (error) throw new Error(`SupabaseStorageAdapter.getReportForImage: ${error.message}`);
+    if (!data) return null;
+
+    const row = data as InspectionReportRow;
+    return {
+      report_id: row.report_id,
+      image_id: row.image_id,
+      generated_at: new Date(row.generated_at).toISOString(),
+      summary: row.summary,
+      ai_hypothesis: row.ai_hypothesis,
+      deterministic_routing: row.deterministic_routing,
+      human_sign_off: row.human_sign_off,
+    };
+  }
 }
 
 function rowToRecord(row: InspectionRecordRow): InspectionRecord {
@@ -200,5 +226,6 @@ function rowToRecord(row: InspectionRecordRow): InspectionRecord {
     reviewer_note: row.reviewer_note ?? undefined,
     image_base64: byteaToImage(row.image_data),
     mime_type: row.mime_type ?? undefined,
+    created_by: row.created_by ?? undefined,
   };
 }

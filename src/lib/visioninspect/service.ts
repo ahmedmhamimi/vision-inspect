@@ -62,7 +62,10 @@ export class ChatUnavailableError extends Error {
  * Throws AnalysisUnavailableError only if every adapter in the chain failed — the caller
  * (route.ts) maps this to a safe 502-style response.
  */
-export async function analyzeAndRoute(input: AnalyzeImageInput): Promise<InspectionRecord> {
+export async function analyzeAndRoute(
+  input: AnalyzeImageInput,
+  createdBy?: string,
+): Promise<InspectionRecord> {
   const chain = getVisionAnalysisChain();
   const attempts: { provider: string; message: string }[] = [];
 
@@ -82,6 +85,7 @@ export async function analyzeAndRoute(input: AnalyzeImageInput): Promise<Inspect
         ...routedRecord,
         image_base64: input.imageBuffer.toString('base64'),
         mime_type: input.mimeType,
+        created_by: createdBy,
       };
 
       await getReportSink().saveRecord(record);
@@ -148,6 +152,12 @@ export async function generateAndSaveReport(imageId: string): Promise<Inspection
 
 export async function listInspectionHistory(limit?: number): Promise<InspectionRecord[]> {
   return getReportSink().listRecords(limit);
+}
+
+/** Loads the generated report for a record, or null if it hasn't been generated yet
+ *  (record still pending/unconfirmed). Used by the admin record-detail view. */
+export async function getInspectionReport(imageId: string): Promise<InspectionReport | null> {
+  return getReportSink().getReportForImage(imageId);
 }
 
 export async function deleteInspection(imageId: string): Promise<void> {

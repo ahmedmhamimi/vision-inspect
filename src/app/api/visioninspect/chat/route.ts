@@ -23,6 +23,18 @@ import {
   RecordNotFoundError,
   chatAboutInspection,
 } from '@/lib/visioninspect/service';
+import { getCurrentUser, isAuthConfigured } from '@/lib/auth/session';
+
+/** Same fail-open auth guard as the parent route — see its requireApiAuth() for the
+ *  full rationale. */
+async function requireApiAuth(): Promise<NextResponse | null> {
+  if (!isAuthConfigured()) return null;
+  const user = await getCurrentUser();
+  if (!user) {
+    return NextResponse.json({ error: 'Authentication required.' }, { status: 401 });
+  }
+  return null;
+}
 
 function clientIdentifier(request: NextRequest): string {
   return (
@@ -57,6 +69,9 @@ function safeErrorResponse(err: unknown, context: string): NextResponse {
 }
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
+  const authError = await requireApiAuth();
+  if (authError) return authError;
+
   const identifier = clientIdentifier(request);
   // A distinct bucket from the analyze endpoint's rate limit (same function, different
   // key) — chatting about an image and re-analyzing one are different cost profiles and

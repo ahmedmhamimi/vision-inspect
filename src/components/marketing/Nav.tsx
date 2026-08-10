@@ -1,12 +1,17 @@
 /**
  * Nav.tsx
- * Shared header for the marketing route group. Small client component only because of
- * the mobile menu toggle — everything else here is static.
+ * Shared header for the marketing route group. Client component for the mobile menu
+ * toggle, but account state (profile) is passed down from the server layout — see
+ * app/(marketing)/layout.tsx, which calls getCurrentProfile() — rather than fetched
+ * here, since that lookup needs server-only Supabase access. This is what makes account
+ * state (signed in vs signed out, email, admin link, sign out) visible site-wide instead
+ * of only after clicking into /visioninspect.
  */
 'use client';
 
 import Link from 'next/link';
 import { useState } from 'react';
+import type { Profile } from '@/lib/auth/session';
 
 const LINKS = [
   { href: '/features', label: 'Features' },
@@ -15,7 +20,7 @@ const LINKS = [
   { href: '/about', label: 'About' },
 ];
 
-export function Nav() {
+export function Nav({ profile }: { profile: Profile | null }) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -38,12 +43,51 @@ export function Nav() {
               {link.label}
             </Link>
           ))}
-          <Link
-            href="/visioninspect"
-            className="touch-target inline-flex items-center rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-2 text-sm font-semibold text-white shadow-md shadow-blue-500/25 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/35 hover:scale-105"
-          >
-            Launch app
-          </Link>
+
+          {profile ? (
+            <div className="flex items-center gap-3">
+              {profile.role === 'admin' && (
+                <Link
+                  href="/admin"
+                  className="text-sm font-medium text-graphite-soft transition-colors hover:text-teal"
+                >
+                  Admin
+                </Link>
+              )}
+              <span className="text-sm text-graphite-soft">
+                {profile.email} · <span className="uppercase tracking-wide">{profile.role}</span>
+              </span>
+              <form action="/logout" method="POST">
+                <button
+                  type="submit"
+                  className="rounded-tag border border-steel px-3 py-1.5 text-sm text-graphite transition hover:border-steel-dark"
+                >
+                  Sign out
+                </button>
+              </form>
+              <Link
+                href="/visioninspect"
+                className="touch-target inline-flex items-center rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-2 text-sm font-semibold text-white shadow-md shadow-blue-500/25 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/35 hover:scale-105"
+              >
+                Open app
+              </Link>
+            </div>
+          ) : (
+            <div className="flex items-center gap-4">
+              <Link
+                href="/login"
+                className="text-sm font-medium text-graphite-soft transition-colors hover:text-teal"
+              >
+                Sign in
+              </Link>
+              <Link
+                href="/visioninspect"
+                className="touch-target inline-flex items-center rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-2 text-sm font-semibold text-white shadow-md shadow-blue-500/25 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/35 hover:scale-105"
+              >
+                Launch app
+              </Link>
+            </div>
+          )}
         </nav>
 
         <button
@@ -71,13 +115,56 @@ export function Nav() {
               {link.label}
             </Link>
           ))}
-          <Link
-            href="/visioninspect"
-            onClick={() => setOpen(false)}
-            className="mt-2 inline-flex items-center justify-center rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-blue-500/20"
-          >
-            Launch app
-          </Link>
+
+          {profile ? (
+            <>
+              <div className="mt-2 border-t border-steel/60 px-3 pt-3 text-sm text-graphite-soft">
+                {profile.email} · <span className="uppercase tracking-wide">{profile.role}</span>
+              </div>
+              {profile.role === 'admin' && (
+                <Link
+                  href="/admin"
+                  onClick={() => setOpen(false)}
+                  className="rounded-lg px-3 py-2.5 text-sm font-medium text-graphite-soft hover:bg-porcelain-dim hover:text-teal"
+                >
+                  Admin dashboard
+                </Link>
+              )}
+              <Link
+                href="/visioninspect"
+                onClick={() => setOpen(false)}
+                className="mt-2 inline-flex items-center justify-center rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-blue-500/20"
+              >
+                Open app
+              </Link>
+              <form action="/logout" method="POST">
+                <button
+                  type="submit"
+                  onClick={() => setOpen(false)}
+                  className="mt-2 w-full rounded-full border border-steel px-5 py-2.5 text-sm font-medium text-graphite transition hover:border-steel-dark"
+                >
+                  Sign out
+                </button>
+              </form>
+            </>
+          ) : (
+            <>
+              <Link
+                href="/login"
+                onClick={() => setOpen(false)}
+                className="rounded-lg px-3 py-2.5 text-sm font-medium text-graphite-soft hover:bg-porcelain-dim hover:text-teal"
+              >
+                Sign in
+              </Link>
+              <Link
+                href="/visioninspect"
+                onClick={() => setOpen(false)}
+                className="mt-2 inline-flex items-center justify-center rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-blue-500/20"
+              >
+                Launch app
+              </Link>
+            </>
+          )}
         </nav>
       )}
     </header>
