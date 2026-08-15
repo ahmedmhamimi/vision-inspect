@@ -30,6 +30,8 @@ import { applyHumanDecision, generateInspectionReport, routeDefect } from './too
 import { VisionAnalysisError, type AnalyzeImageInput } from './ports/vision-analysis.port';
 import { ChatError } from './ports/chat.port';
 
+import { computeUncertaintyMetrics } from './uncertainty/uncertainty-engine';
+
 export class AnalysisUnavailableError extends Error {
   constructor(public readonly attempts: { provider: string; message: string }[]) {
     super(
@@ -76,13 +78,15 @@ export async function analyzeAndRoute(
       const imageId = randomUUID();
       const routedRecord = routeDefect(hypothesis, imageId, taxonomy);
 
-      // Attach the original image here, at the integration layer, rather than inside
-      // routeDefect() itself — routeDefect is a pure deterministic tool (see
-      // tool-rules.ts) and must stay that way. Persisting the image is a storage
-      // concern, so it's bolted on right before the one saveRecord() call that
-      // persists this record for the first time.
+      // Compute 4-dimensional calibrated uncertainty metrics (UAVI spec)
+      const uncertainty_metrics = computeUncertaintyMetrics(
+        [hypothesis],
+        input.imageBuffer,
+      );
+
       const record: InspectionRecord = {
         ...routedRecord,
+        uncertainty_metrics,
         image_base64: input.imageBuffer.toString('base64'),
         mime_type: input.mimeType,
         created_by: createdBy,

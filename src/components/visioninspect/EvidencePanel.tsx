@@ -10,6 +10,7 @@
  *   indicator without the full evidence panel.
  */
 import type { InspectionRecord, Severity } from '@/lib/visioninspect/schema';
+import { UncertaintyBreakdown } from './UncertaintyBreakdown';
 
 const SEVERITY_STYLES: Record<Severity, { bg: string; text: string; label: string }> = {
   low: { bg: 'bg-severity-low-bg', text: 'text-severity-low', label: 'Low severity' },
@@ -73,13 +74,13 @@ interface EvidencePanelProps {
 
 export function EvidencePanel({ record }: EvidencePanelProps) {
   return (
-    <div className="relative p-5 sm:p-6">
+    <div className="relative p-5 sm:p-6 space-y-5">
       <div className="tag-punch-hole -left-1.5 -top-1.5" aria-hidden="true" />
 
       {record.degraded && (
         <div
           role="status"
-          className="mb-4 rounded-tag border border-severity-medium bg-severity-medium-bg px-3 py-2 font-body text-xs text-graphite"
+          className="rounded-tag border border-severity-medium bg-severity-medium-bg px-3 py-2 font-body text-xs text-graphite"
         >
           This hypothesis was produced by a degraded-confidence fallback provider that
           could not fully analyze the image.{' '}
@@ -94,11 +95,11 @@ export function EvidencePanel({ record }: EvidencePanelProps) {
         </span>
       </div>
 
-      <h3 className="mt-3 font-display text-fluid-lg font-medium capitalize text-graphite">
+      <h3 className="font-display text-fluid-lg font-medium capitalize text-graphite">
         {record.defect_type.replace(/-/g, ' ')}
       </h3>
 
-      <dl className="mt-4 space-y-3">
+      <dl className="space-y-3">
         <div>
           <dt className="font-body text-xs uppercase tracking-wide text-graphite-soft">
             Visible evidence (AI-stated)
@@ -121,11 +122,17 @@ export function EvidencePanel({ record }: EvidencePanelProps) {
         )}
       </dl>
 
-      <div className="mt-4">
+      <div>
         <ConfidenceMeter confidence={record.confidence} />
       </div>
 
-      <div className="mt-4 flex items-center justify-between rounded-tag bg-porcelain-dim px-3 py-2">
+      {record.uncertainty_metrics && (
+        <div className="mt-4">
+          <UncertaintyBreakdown metrics={record.uncertainty_metrics} />
+        </div>
+      )}
+
+      <div className="flex items-center justify-between rounded-tag bg-porcelain-dim px-3 py-2">
         <span className="font-body text-xs text-graphite-soft">Deterministic routing</span>
         <span className="font-mono text-xs text-graphite">{record.taxonomy_reference}</span>
       </div>

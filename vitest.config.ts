@@ -11,6 +11,11 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
   plugins: [tsconfigPaths()],
+  resolve: {
+    alias: {
+      'server-only': 'vite-tsconfig-paths',
+    },
+  },
   test: {
     environment: 'node',
     include: ['tests/**/*.test.ts'],

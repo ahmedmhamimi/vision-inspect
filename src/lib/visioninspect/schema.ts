@@ -63,6 +63,19 @@ export const RawHypothesisSchema = z.object({
 });
 export type RawHypothesis = z.infer<typeof RawHypothesisSchema>;
 
+export const UncertaintyMetricsSchema = z.object({
+  u_prediction: z.number().min(0).max(1),
+  u_image: z.number().min(0).max(1),
+  u_semantic: z.number().min(0).max(1),
+  u_evidence: z.number().min(0).max(1),
+  u_composite: z.number().min(0).max(1),
+  samples_count: z.number().int().positive().default(1),
+  blur_score: z.number().min(0).max(1).optional(),
+  exposure_score: z.number().min(0).max(1).optional(),
+  resolution_score: z.number().min(0).max(1).optional(),
+});
+export type UncertaintyMetrics = z.infer<typeof UncertaintyMetricsSchema>;
+
 /** Full inspection record: AI hypothesis + deterministic routing + (eventually) human sign-off. */
 export const InspectionRecordSchema = z.object({
   image_id: z.string().uuid(),
@@ -77,6 +90,7 @@ export const InspectionRecordSchema = z.object({
   taxonomy_reference: z.string().min(1),
   degraded: z.boolean().default(false),
   degraded_reason: z.string().max(500).optional(),
+  uncertainty_metrics: UncertaintyMetricsSchema.optional(),
   created_at: z.string().datetime(),
   confirmed_at: z.string().datetime().optional(),
   reviewer_note: z.string().max(2000).optional(),
