@@ -16,23 +16,26 @@ import { SeverityBadge } from './EvidencePanel';
 import { InfoModal } from './InfoModal';
 import { ChatModal } from './ChatModal';
 
+type HistoryFilter = 'all' | 'confirmed' | 'pending' | 'corrected';
+
+interface HistoryListProps {
+  filter: HistoryFilter;
+}
+
 function decisionLabel(record: InspectionRecord): string {
   if (record.human_decision === 'pending') return 'Awaiting review';
   if (record.human_decision === 'confirmed') return 'Confirmed';
   return 'Corrected';
 }
 
-export function HistoryList() {
+export function HistoryList({ filter }: HistoryListProps) {
   const [records, setRecords] = useState<InspectionRecord[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [infoImageId, setInfoImageId] = useState<string | null>(null);
   const [chatImageId, setChatImageId] = useState<string | null>(null);
-  // Keyed by image_id, one transcript per inspection. Lives only in this component's
-  // state for the life of the page — never sent anywhere except one turn at a time to
-  // /api/visioninspect/chat, and never persisted. Reopening the chat for the same image
-  // within this session picks the conversation back up; a page refresh clears it.
+
   const [chatHistories, setChatHistories] = useState<Record<string, ChatMessage[]>>({});
 
   useEffect(() => {
@@ -62,12 +65,17 @@ export function HistoryList() {
   async function handleDelete(imageId: string) {
     if (!confirm('Are you sure you want to delete this inspection?')) return;
     setDeletingId(imageId);
+
     try {
-      const res = await fetch(`/api/visioninspect?image_id=${imageId}`, { method: 'DELETE' });
+      const res = await fetch(`/api/visioninspect?image_id=${imageId}`, {
+        method: 'DELETE',
+      });
+
       if (!res.ok) {
         const body = await res.json();
         throw new Error(body.error ?? 'Failed to delete record.');
       }
+
       setReloadKey((k) => k + 1);
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Failed to delete record.');
@@ -102,62 +110,87 @@ export function HistoryList() {
     );
   }
 
+  const filteredRecords =
+    filter === 'all'
+      ? records
+      : records.filter((record) => record.human_decision === filter);
+
   return (
     <>
-      <ul className="space-y-3">
-      {records.map((record) => (
-        <li
-          key={record.image_id}
-          className="group flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-steel/80 bg-white/90 p-4 shadow-sm backdrop-blur-md transition-all duration-300 hover:border-steel-dark hover:shadow-md hover:-translate-y-0.5"
-        >
-          <div className="flex items-center gap-3">
-            <SeverityBadge severity={record.severity} />
-            <span className="font-body text-sm font-semibold capitalize text-graphite">
-              {record.defect_type.replace(/-/g, ' ')}
-            </span>
-          </div>
-          <div className="flex items-center gap-3">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-porcelain-dim px-2.5 py-1 font-body text-xs font-medium text-graphite-soft border border-steel/50">
-              <span
-                className={`h-1.5 w-1.5 rounded-full ${
-                  record.human_decision === 'pending'
-                    ? 'bg-amber-500 animate-pulse'
-                    : record.human_decision === 'confirmed'
-                    ? 'bg-emerald-500'
-                    : 'bg-blue-500'
-                }`}
-              />
-              {decisionLabel(record)}
-            </span>
-            <span className="font-mono text-xs text-graphite-soft/80">
-              {new Date(record.created_at).toLocaleDateString()}
-            </span>
-            <button
-              onClick={() => setInfoImageId(record.image_id)}
-              className="ml-1 rounded-lg border border-steel/60 px-2.5 py-1 font-body text-xs font-medium text-graphite transition-colors hover:bg-porcelain-dim"
+      {filteredRecords.length === 0 ? (
+        <div className="rounded-tag border border-dashed border-steel-dark bg-porcelain-dim p-6 text-center">
+          <p className="font-body text-sm text-graphite-soft">
+            No inspections found for this filter.
+          </p>
+        </div>
+      ) : (
+        <ul className="space-y-3">
+          {filteredRecords.map((record) => (
+            <li
+              key={record.image_id}
+              className="group flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-steel/80 bg-white/90 p-4 shadow-sm backdrop-blur-md transition-all duration-300 hover:border-steel-dark hover:shadow-md hover:-translate-y-0.5"
             >
-              Info
-            </button>
-            <button
-              onClick={() => handleChat(record.image_id)}
-              className="rounded-lg border border-graphite/40 px-2.5 py-1 font-body text-xs font-medium text-graphite transition-colors hover:bg-graphite hover:text-white"
-            >
-              Chat
-            </button>
-            <button
-              onClick={() => handleDelete(record.image_id)}
-              disabled={deletingId === record.image_id}
-              className="rounded-lg px-2.5 py-1 font-body text-xs font-medium text-red-600 transition-colors hover:bg-red-50 hover:text-red-700 disabled:opacity-50"
-            >
-              {deletingId === record.image_id ? 'Deleting...' : 'Delete'}
-            </button>
-          </div>
-        </li>
-      ))}
-    </ul>
-      {infoImageId && (
-        <InfoModal imageId={infoImageId} onClose={() => setInfoImageId(null)} />
+              <div className="flex items-center gap-3">
+                <SeverityBadge severity={record.severity} />
+
+                <span className="font-body text-sm font-semibold capitalize text-graphite">
+                  {record.defect_type.replace(/-/g, ' ')}
+                </span>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-porcelain-dim px-2.5 py-1 font-body text-xs font-medium text-graphite-soft border border-steel/50">
+                  <span
+                    className={`h-1.5 w-1.5 rounded-full ${
+                      record.human_decision === 'pending'
+                        ? 'bg-amber-500 animate-pulse'
+                        : record.human_decision === 'confirmed'
+                        ? 'bg-emerald-500'
+                        : 'bg-blue-500'
+                    }`}
+                  />
+
+                  {decisionLabel(record)}
+                </span>
+
+                <span className="font-mono text-xs text-graphite-soft/80">
+                  {new Date(record.created_at).toLocaleDateString()}
+                </span>
+
+                <button
+                  onClick={() => setInfoImageId(record.image_id)}
+                  className="ml-1 rounded-lg border border-steel/60 px-2.5 py-1 font-body text-xs font-medium text-graphite transition-colors hover:bg-porcelain-dim"
+                >
+                  Info
+                </button>
+
+                <button
+                  onClick={() => handleChat(record.image_id)}
+                  className="rounded-lg border border-graphite/40 px-2.5 py-1 font-body text-xs font-medium text-graphite transition-colors hover:bg-graphite hover:text-white"
+                >
+                  Chat
+                </button>
+
+                <button
+                  onClick={() => handleDelete(record.image_id)}
+                  disabled={deletingId === record.image_id}
+                  className="rounded-lg px-2.5 py-1 font-body text-xs font-medium text-red-600 transition-colors hover:bg-red-50 hover:text-red-700 disabled:opacity-50"
+                >
+                  {deletingId === record.image_id ? 'Deleting...' : 'Delete'}
+                </button>
+              </div>
+            </li>
+          ))}
+        </ul>
       )}
+
+      {infoImageId && (
+        <InfoModal
+          imageId={infoImageId}
+          onClose={() => setInfoImageId(null)}
+        />
+      )}
+
       {chatImageId && (
         <ChatModal
           imageId={chatImageId}

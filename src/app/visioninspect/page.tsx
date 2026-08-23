@@ -25,6 +25,8 @@ type WorkflowState =
   | { status: 'error'; message: string }
   | { status: 'result'; record: InspectionRecord; report: InspectionReport | null; confirming: boolean };
 
+type HistoryFilter = 'all' | 'confirmed' | 'pending' | 'corrected';
+
 interface LastSubmission {
   imageBase64: string;
   mimeType: string;
@@ -47,6 +49,7 @@ export default function VisionInspectPage() {
   const [workflow, setWorkflow] = useState<WorkflowState>({ status: 'idle' });
   const [lastSubmission, setLastSubmission] = useState<LastSubmission | null>(null);
   const [historyKey, setHistoryKey] = useState(0);
+  const [historyFilter, setHistoryFilter] = useState<HistoryFilter>('all');
 
   const runAnalysis = useCallback(async (imageBase64: string, mimeType: string) => {
     setLastSubmission({ imageBase64, mimeType });
@@ -84,7 +87,7 @@ export default function VisionInspectPage() {
           report: InspectionReport;
         }>('/api/visioninspect', 'PATCH', decision);
         setWorkflow({ status: 'result', record, report, confirming: false });
-        setHistoryKey((k) => k + 1); // refresh history now that a new decision was recorded
+        setHistoryKey((k) => k + 1);
       } catch (err) {
         setWorkflow({
           status: 'error',
@@ -136,11 +139,26 @@ export default function VisionInspectPage() {
       </section>
 
       <section aria-label="Inspection history" className="mt-10">
-        <h2 className="font-display text-fluid-lg font-medium text-graphite">
-          Recent inspections
-        </h2>
+        <div className="flex items-center justify-between gap-4">
+          <h2 className="font-display text-fluid-lg font-medium text-graphite">
+            Recent inspections
+          </h2>
+
+          <select
+            value={historyFilter}
+            onChange={(e) => setHistoryFilter(e.target.value as HistoryFilter)}
+            className="rounded-lg border border-steel bg-white px-3 py-2 font-body text-sm text-graphite"
+            aria-label="Filter inspection history"
+          >
+            <option value="all">All</option>
+            <option value="confirmed">Confirmed</option>
+            <option value="pending">Awaiting review</option>
+            <option value="corrected">Corrected</option>
+          </select>
+        </div>
+
         <div className="mt-3">
-          <HistoryList key={historyKey} />
+          <HistoryList key={historyKey} filter={historyFilter} />
         </div>
       </section>
     </main>
