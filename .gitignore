@@ -1,5 +1,5 @@
 # .gitignore
-
+*.zip
 
 docstrings.txt
 combined.txt
