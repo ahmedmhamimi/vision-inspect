@@ -1,0 +1,8 @@
+DRAFT engineering-justification paragraph (edit before use -- verify the
+numbers below against your own sweep output; do not paste unread):
+
+The blur-normalization constant was swept over [500, 800, 1000, 1200, 1500, 2000, 2500, 3000] on the real evaluation set; point-biserial correlation between U_image and classification error peaked at 0.1215 for a normalization constant of 800, differing from the manuscript's originally assumed value of 1500.
+Resolution bounds were swept over the candidate pairs tested; correlation with classification error was strongest at (1000, 3500) px, versus the manuscript's originally assumed (800, 3000) px.
+Among the U_image sub-weight configurations tested, the strongest correlation with classification error was obtained at blur=0.60, exposure=0.25, resolution=0.15.
+
+Caveat to state explicitly in the manuscript: this sweep evaluates each constant's correlation with FINAL classification correctness on the real evaluation set, which is a downstream, indirect signal -- it does not directly validate the constants against a ground-truth blur/exposure quality judgement, since no such human-labeled quality ground truth is available for this dataset.

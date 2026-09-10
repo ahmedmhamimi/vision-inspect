@@ -1,0 +1,2 @@
+path,n_samples,mean_api_calls_per_sample,mean_local_latency_ms,mean_api_latency_ms,p95_api_latency_ms,total_prompt_tokens,total_output_tokens,estimated_cost_usd
+fast,83,1.0,63.28312351795458,12316.35449736158,41160.35673950008,100015,5700,PRICING NOT CONFIGURED -- fill in config.GEMINI_PRICING_USD_PER_1M_TOKENS
