@@ -1,0 +1,11 @@
+{
+  "n_total_valid_samples": 53,
+  "n_ground_truth_critical": 33,
+  "n_upstream_correctly_flagged_critical": 33,
+  "ground_truth_critical_recall": 1.0,
+  "ground_truth_critical_false_negative_rate": 0.0,
+  "n_predicted_critical_by_upstream": 36,
+  "n_rule_conditional_violations": 0,
+  "rule_conditional_pvr": 0.0,
+  "explanatory_note": "Ground-truth critical recall/FNR characterizes upstream VLM perception failure: real critical defects the model itself misclassified into a non-critical type, which the deterministic routing rule can never see or correct, since it only inspects the model's own output label. Rule-conditional PVR characterizes routing-implementation failure: cases the model DID label as critical but which the routing rule then failed to escalate to 'high' severity. If the routing implementation is correct, rule_conditional_pvr should be exactly 0.0 by construction -- a nonzero value here would indicate a bug in route_severity(), not a modeling limitation, and should be investigated before reporting these numbers."
+}

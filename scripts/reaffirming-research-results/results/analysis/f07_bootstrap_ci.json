@@ -1,0 +1,28 @@
+{
+  "ece": {
+    "point_estimate": 0.08277409877412378,
+    "ci_low": 0.0598073570388076,
+    "ci_high": 0.17150943715067243,
+    "n_valid_resamples": 2000
+  },
+  "brier": {
+    "point_estimate": 0.10006753582798311,
+    "ci_low": 0.05325298944546558,
+    "ci_high": 0.15577865182388734,
+    "n_valid_resamples": 2000
+  },
+  "auroc": {
+    "point_estimate": 0.8585858585858586,
+    "ci_low": 0.6770186335403727,
+    "ci_high": 0.990220436000487,
+    "n_valid_resamples": 1999
+  },
+  "aurc": {
+    "point_estimate": 0.04724606273208464,
+    "ci_low": 0.008829278083290495,
+    "ci_high": 0.10988206072455028,
+    "n_valid_resamples": 2000
+  },
+  "_n_samples": 53,
+  "_n_resamples_requested": 2000
+}

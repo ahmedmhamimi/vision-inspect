@@ -1,0 +1,20 @@
+{
+  "threshold": 0.08661716185185185,
+  "target_accuracy": 0.99,
+  "calibration_frac": 0.5,
+  "seed": 42,
+  "calibration_eval": {
+    "n": 26,
+    "n_non_escalated": 7,
+    "coverage": 0.2692307692307692,
+    "accuracy": 1.0,
+    "risk": 0.0
+  },
+  "test_eval": {
+    "n": 27,
+    "n_non_escalated": 8,
+    "coverage": 0.2962962962962963,
+    "accuracy": 1.0,
+    "risk": 0.0
+  }
+}

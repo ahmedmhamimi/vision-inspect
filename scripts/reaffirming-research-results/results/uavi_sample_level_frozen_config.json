@@ -1,0 +1,33 @@
+{
+  "generated_at_utc": "2026-09-11T04:19:58.657318+00:00",
+  "manifest": "results/manifest.json",
+  "n_samples": 83,
+  "gemini_model": "gemini-3.5-flash-lite",
+  "fusion_weights": {
+    "prediction": 0.7,
+    "image": 0.1,
+    "lexical": 0.1,
+    "evidence": 0.1
+  },
+  "tau_low": 0.01,
+  "tau_high": 0.99,
+  "enable_repeat_sampling": true,
+  "n_repeat": 5,
+  "temperature": 0.8,
+  "critical_types_by_category": {
+    "bottle": [
+      "broken_large",
+      "broken_small"
+    ]
+  },
+  "blur_laplacian_norm": 1500.0,
+  "resolution_bounds_px": [
+    800,
+    3000
+  ],
+  "u_image_weights": {
+    "blur": 0.45,
+    "exposure": 0.35,
+    "resolution": 0.2
+  }
+}

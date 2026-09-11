@@ -1,0 +1,4 @@
+ground_truth,predicted,count
+good,broken_small,3
+broken_large,broken_small,3
+broken_small,broken_large,3

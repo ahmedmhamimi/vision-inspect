@@ -1,0 +1,4 @@
+category,defect_type,n,accuracy,ece
+bottle,broken_large,20,0.85,0.18615084556614772
+bottle,broken_small,13,0.7692307692307693,0.19301497762171954
+bottle,good,20,0.85,0.158660251639398
